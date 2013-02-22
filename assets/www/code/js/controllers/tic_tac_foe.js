@@ -32,4 +32,10 @@
 
   })();
 
+  if (typeof module !== "undefined" && module.exports) {
+    exports.tic_tac_foe = tic_tac_foe;
+  } else {
+    window.tic_tac_foe = tic_tac_foe;
+  }
+
 }).call(this);

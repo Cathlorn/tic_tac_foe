@@ -1,3 +1,6 @@
+#root = exports ? this
+#root.tic_tac_foe = tic_tac_foe
+
 class tic_tac_foe
   constructor: (inits) ->
     @drawCanvas = (element) =>
@@ -16,3 +19,10 @@ class tic_tac_foe
       testDiv.appendChild c
     @setup_screen = (element) =>
       @drawCanvas element
+
+if typeof module != "undefined" && module.exports
+  #On a server
+  exports.tic_tac_foe = tic_tac_foe
+else
+  #On a client
+  window.tic_tac_foe = tic_tac_foe

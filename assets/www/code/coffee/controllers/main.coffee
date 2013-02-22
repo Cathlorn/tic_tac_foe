@@ -1,7 +1,14 @@
 Templates =
   HOME: 'home_page'
   SETTINGS: 'settings_page'
- 
+
+if typeof module != "undefined" && module.exports
+  #On a server
+  tic_tac_foe = require("tic_tac_foe.coffee").tic_tac_foe
+else
+  #On a client
+  tic_tac_foe = window.tic_tac_foe
+
 class Main_Controller_VM
   constructor: (inits) ->
     @template_name = ko.observable Templates.SETTINGS
@@ -20,7 +27,7 @@ class Main_Controller_VM
     for element in d
       console.log element.id
       if element.id == 'testDivision'
-        game.setup_screen element
+        @game.setup_screen element
     $(d).trigger("create")
     #v = $(d).find("ul")
     #v.listview 'refresh'
