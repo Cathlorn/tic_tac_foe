@@ -32,6 +32,61 @@ class tic_tac_foe
     #Each game decides when to terminate or yield. A status of the game is reported each time it exits
     @gameScheduler = new GameScheduler()
 
+#Describes the current run status of the game
+GameState =
+  GAME_UNSTARTED: 0
+  GAME_IN_PROGRESS: 1
+  GAME_SUSPENDED: 2
+  GAME_TERMINATED: 3
+
+#Describes the outcome of a given game
+WinnerStatus =
+  UNDETERMINED: 0
+  WINNER: 1
+  LOSER: 2
+
+#Class handles functionality common to all games and mini-games
+class Game
+  #Constructor. Creates new instances of the class.
+  #Params: gameScheduler - reference to the game scheduler a game instance is assigned to.
+  constructor: (gameScheduler) ->
+    #Reference to the game scheduler game belongs to
+    #Reference available for games to add other games into 
+    @gameSchedulerReference = gameScheduler
+    
+    #Method reports the current state of the game
+    @getGameState = () ->
+      console.log "Retrieving game state"
+      
+    #Method reports the outcome of the game
+    @getGameResult = () ->
+      console.log "Retrieving game result"
+      
+    #Method reports the current player playing the game
+    @getCurrentPlayer = () ->
+      console.log "Retrieving current player"
+      
+    #Method gets a game to resume playing from where it was when it was suspended.
+    #Params: previousGameState - returns the game state of the game that finished
+    #        before this game was resumed.
+    #        previousPlayerId - returns the Id of the last player to place the
+    #        previous game launched.
+    #Remarks: Method can use the outcome of the previously launched game to
+    #         influence how the game resumes.
+    @resume = (previousGameState, previousPlayerId) ->
+      console.log "Resuming game"
+      
+    #Method prepares the game for launch.
+    @initialize = () ->
+      console.log "Initializing game"
+    
+    #Method suspends game and prepares for another game to launch
+    @yield = () ->
+      console.log "Suspending game"
+    
+    #Method prepares a game to stop running
+    @terminate = () ->
+      console.log "Terminating game"
 
 #Class handles the operations of the main tic tac toe game.
 #It also schedules minigames to be played
