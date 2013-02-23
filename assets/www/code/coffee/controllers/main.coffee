@@ -27,7 +27,7 @@ class Main_Controller_VM
     for element in d
       console.log element.id
       if element.id == 'testDivision'
-        @game.setup_screen element
+        @game.setupScreen element
     $(d).trigger("create")
     #v = $(d).find("ul")
     #v.listview 'refresh'

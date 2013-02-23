@@ -20,10 +20,6 @@ class tic_tac_foe
     @setupScreen = (element) =>
       @setupCanvas element
     
-    #Method kicks off the game.
-    @runGame = () =>
-      gameScheduler.run
-
     #Stores the primary tic tac toe game being played
     #Scheduler will always have at least tic tac toe present to play.
     @ticTacToe = new TicTacToe()
@@ -81,12 +77,28 @@ class Game
       console.log "Initializing game"
     
     #Method suspends game and prepares for another game to launch
-    @yield = () ->
+    @suspend = () ->
       console.log "Suspending game"
     
     #Method prepares a game to stop running
     @terminate = () ->
       console.log "Terminating game"
+      
+    #Method registers an callback function for when a game suspends
+    @registerSuspendEvents = (callback) =>
+      console.log "Register callback for suspend events"
+    
+    #Method unregisters an callback function for when a game suspends
+    @unregisterSuspendEvents = (callback) =>
+      console.log "Unregister callback for suspend events"
+    
+    #Method registers an callback function for when a game terminates
+    @registerTerminateEvents = (callback) =>
+      console.log "Register callback for terminate events"
+    
+    #Method unregisters an callback function for when a game terminates
+    @unregisterTerminateEvents = (callback) =>
+      console.log "Register callback for terminate events"
 
 #Class handles the operations of the main tic tac toe game.
 #It also schedules minigames to be played
@@ -153,6 +165,33 @@ class TicTacToe extends Game
     #Method chooses the mini-game that will play this game yields. 
     @addMiniGameToScheduler = () ->
       console.log "Adding Mini-Game"
+
+#Class controls which game is playing within TicTacFoe
+class GameScheduler
+  constructor: (inits) ->
+    #Method adds a game for scheduling
+    #Params: game - Reference to game that is being added to run
+    @addGame = (game) ->
+      console.log "Adding Game"
+      
+    #Method removes a game from scheduling
+    #Params: game - Reference to game that is being removed from running
+    @removeGame = (game) ->
+      console.log "Removing Game"
+    
+    #Method triggers when a running game suspends control
+    #Params: game - Reference to game that suspended
+    @suspendEventHandler = (game) ->
+      console.log "Handling suspend event"
+      
+    #Method triggers when a running game terminates
+    #Params: game - Reference to game that terminated
+    @terminateEventHandler = (game) ->
+      console.log "Handling terminate event"
+      
+    #Method determines the next running game
+    @determineNextRunningGame = () ->
+      console.log "Determining the next running game"
 
 if typeof module != "undefined" && module.exports
   #On a server
