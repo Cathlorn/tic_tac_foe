@@ -17,7 +17,7 @@ class tic_tac_foe
     
     #Method prepares a DOM element for displaying Tic Tac Foe within it. 
     #Params: element - DOM element Tic Tac Foe will be placed inside.
-    @setupScreen = (element) =>
+    @setupGame = (element) =>
       @setupCanvas element
     
     #Stores the primary tic tac toe game being played

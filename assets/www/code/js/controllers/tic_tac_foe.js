@@ -15,7 +15,7 @@
         _this.canvas = new Canvas(c);
         return element.appendChild(c);
       };
-      this.setupScreen = function(element) {
+      this.setupGame = function(element) {
         return _this.setupCanvas(element);
       };
       this.ticTacToe = new TicTacToe();

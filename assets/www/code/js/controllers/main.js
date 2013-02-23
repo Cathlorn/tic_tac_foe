@@ -46,7 +46,7 @@
         element = d[_i];
         console.log(element.id);
         if (element.id === 'testDivision') {
-          this.game.setupScreen(element);
+          this.game.setupGame(element);
         }
       }
       $(d).trigger("create");
