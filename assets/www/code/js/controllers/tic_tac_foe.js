@@ -16,7 +16,8 @@
         return element.appendChild(c);
       };
       this.setupGame = function(element) {
-        return _this.setupCanvas(element);
+        _this.setupCanvas(element);
+        return _this.ticTacToe.initialize(_this.canvas);
       };
       this.ticTacToe = new TicTacToe();
       this.gameScheduler = new GameScheduler();
@@ -56,7 +57,7 @@
       this.resume = function(previousGameState, previousPlayerId) {
         return console.log("Resuming game");
       };
-      this.initialize = function() {
+      this.initialize = function(canvasArg) {
         return console.log("Initializing game");
       };
       this.suspend = function() {
@@ -88,18 +89,40 @@
     __extends(TicTacToe, _super);
 
     function TicTacToe(inits) {
+      var _this = this;
       this.drawGrid = function(canvas) {
-        var rect;
+        var heightIncrement, rect, scale, widthIncrement, xStart, yStart, _i, _j, _results;
         console.log("Drawing Grid");
-        rect = new Rectangle(100, 100);
-        rect.x = 250;
-        rect.y = 250;
-        rect.fill = true;
-        rect.fillStyle = 'green';
-        rect.addFrameListener(function(t) {
-          return this.rotation = ((t / 3000) % 1) * Math.PI * 2;
-        });
-        return canvas.append(rect);
+        widthIncrement = 500 / 3;
+        heightIncrement = 500 / 3;
+        yStart = 0;
+        xStart = 0;
+        for (scale = _i = 1; _i <= 2; scale = ++_i) {
+          rect = new Rectangle(20, 500);
+          xStart += widthIncrement;
+          rect.x = xStart;
+          rect.y = yStart;
+          rect.fill = true;
+          rect.fillStyle = 'green';
+          canvas.append(rect);
+        }
+        xStart = 0;
+        yStart = 0;
+        _results = [];
+        for (scale = _j = 1; _j <= 2; scale = ++_j) {
+          yStart += heightIncrement;
+          rect = new Rectangle(500, 20);
+          rect.x = xStart;
+          rect.y = yStart;
+          rect.fill = true;
+          rect.fillStyle = 'green';
+          _results.push(canvas.append(rect));
+        }
+        return _results;
+      };
+      this.initialize = function(canvasArg) {
+        _this.canvas = canvasArg;
+        return _this.drawGrid(_this.canvas);
       };
       this.drawX = function(canvas, cellId) {
         return console.log("Drawing X");

@@ -19,6 +19,7 @@ class tic_tac_foe
     #Params: element - DOM element Tic Tac Foe will be placed inside.
     @setupGame = (element) =>
       @setupCanvas element
+      @ticTacToe.initialize(@canvas)
     
     #Stores the primary tic tac toe game being played
     #Scheduler will always have at least tic tac toe present to play.
@@ -73,7 +74,7 @@ class Game
       console.log "Resuming game"
       
     #Method prepares the game for launch.
-    @initialize = () ->
+    @initialize = (canvasArg) =>
       console.log "Initializing game"
     
     #Method suspends game and prepares for another game to launch
@@ -104,19 +105,42 @@ class Game
 #It also schedules minigames to be played
 class TicTacToe extends Game
   #Constructor. Creates new instances of the class.
-  constructor: (inits) ->  
+  constructor: (inits) ->
+          
     #Method draws the tic tac toe grid onto the canvas.
     #Params: canvas - Canvas the grid will be drawn on.
     @drawGrid = (canvas) ->
       console.log "Drawing Grid"
-      rect = new Rectangle 100, 100
-      rect.x = 250
-      rect.y = 250
-      rect.fill = true
-      rect.fillStyle = 'green'
-      rect.addFrameListener (t)->
-        this.rotation = ((t / 3000) % 1) * Math.PI * 2
-      canvas.append rect
+      widthIncrement = 500/3;
+      heightIncrement = 500/3;
+
+      yStart = 0;
+      xStart = 0;
+      for scale in [1..2]
+        rect = new Rectangle 20, 500
+        xStart += widthIncrement
+        rect.x = xStart
+        rect.y = yStart
+        rect.fill = true
+        rect.fillStyle = 'green'
+        canvas.append rect
+      
+      xStart = 0;
+      yStart = 0;
+      for scale in [1..2]
+        yStart += heightIncrement
+        rect = new Rectangle 500, 20
+        rect.x = xStart
+        rect.y = yStart
+        rect.fill = true
+        rect.fillStyle = 'green'
+        canvas.append rect
+        
+          
+    #Method prepares the game for launch.
+    @initialize = (canvasArg) =>
+      @canvas = canvasArg
+      @drawGrid(@canvas)
       
     #Method draws X onto the tic tac toe grid at cellId location.
     #Params: canvas - Canvas the X will be drawn on.
