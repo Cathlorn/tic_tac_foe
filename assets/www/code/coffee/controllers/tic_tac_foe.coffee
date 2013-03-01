@@ -142,6 +142,7 @@ class TicTacToe extends Game
       @canvas = canvasArg
       @drawGrid(@canvas)
       @drawX(@canvas,0)
+      @drawO(@canvas,1)
       
     #Method draws X onto the tic tac toe grid at cellId location.
     #Params: canvas - Canvas the X will be drawn on.
@@ -182,6 +183,23 @@ class TicTacToe extends Game
     #cellId - Id indicates which cell of the grid the O should be drawn.
     @drawO = (canvas, cellId) ->
       console.log "Drawing O"
+      widthIncrement = 500/3
+      heightIncrement = 500/3
+      widthOffset = widthIncrement/2 + 10
+      circleRadius = (heightIncrement - 40)/2
+      heightOffset = circleRadius/2 - 10
+      xPos = cellId % 3
+      yPos = cellId / 3
+      xStart = (xPos*widthIncrement) + widthOffset
+      yStart = (yPos*heightIncrement) + heightOffset
+      circle = new Circle circleRadius
+      circle.x = xStart
+      circle.y = yStart
+      circle.strokeWidth = 10
+      circle.stroke = 'black'
+      circle.strokeOpacity = 1
+      #circle.fill = true
+      canvas.append circle
       
     #Method draws an animation sequence onto the canvas.
     #Params: canvas - Canvas the animation will be drawn on.

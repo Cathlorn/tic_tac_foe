@@ -123,7 +123,8 @@
       this.initialize = function(canvasArg) {
         _this.canvas = canvasArg;
         _this.drawGrid(_this.canvas);
-        return _this.drawX(_this.canvas, 0);
+        _this.drawX(_this.canvas, 0);
+        return _this.drawO(_this.canvas, 1);
       };
       this.drawX = function(canvas, cellId) {
         var heightIncrement, heightOffset, rect, widthIncrement, widthOffset, xLegLength, xPos, xStart, yPos, yStart;
@@ -153,7 +154,24 @@
         return canvas.append(rect);
       };
       this.drawO = function(canvas, cellId) {
-        return console.log("Drawing O");
+        var circle, circleRadius, heightIncrement, heightOffset, widthIncrement, widthOffset, xPos, xStart, yPos, yStart;
+        console.log("Drawing O");
+        widthIncrement = 500 / 3;
+        heightIncrement = 500 / 3;
+        widthOffset = widthIncrement / 2 + 10;
+        circleRadius = (heightIncrement - 40) / 2;
+        heightOffset = circleRadius / 2 - 10;
+        xPos = cellId % 3;
+        yPos = cellId / 3;
+        xStart = (xPos * widthIncrement) + widthOffset;
+        yStart = (yPos * heightIncrement) + heightOffset;
+        circle = new Circle(circleRadius);
+        circle.x = xStart;
+        circle.y = yStart;
+        circle.strokeWidth = 10;
+        circle.stroke = 'black';
+        circle.strokeOpacity = 1;
+        return canvas.append(circle);
       };
       this.drawAnimation = function(canvas, animationType) {
         return console.log("Drawing Animation");
