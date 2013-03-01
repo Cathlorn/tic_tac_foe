@@ -122,10 +122,35 @@
       };
       this.initialize = function(canvasArg) {
         _this.canvas = canvasArg;
-        return _this.drawGrid(_this.canvas);
+        _this.drawGrid(_this.canvas);
+        return _this.drawX(_this.canvas, 0);
       };
       this.drawX = function(canvas, cellId) {
-        return console.log("Drawing X");
+        var heightIncrement, heightOffset, rect, widthIncrement, widthOffset, xLegLength, xPos, xStart, yPos, yStart;
+        console.log("Drawing X");
+        widthIncrement = 500 / 3;
+        heightIncrement = 500 / 3;
+        widthOffset = 30;
+        heightOffset = 30;
+        xPos = cellId % 3;
+        yPos = cellId / 3;
+        xStart = (xPos * widthIncrement) + widthOffset;
+        yStart = (yPos * heightIncrement) + heightOffset;
+        xLegLength = heightIncrement - heightOffset;
+        rect = new Rectangle(20, xLegLength);
+        rect.x = xStart;
+        rect.y = yStart;
+        rect.fill = true;
+        rect.fillStyle = 'green';
+        rect.rotation = -(Math.PI / 4);
+        canvas.append(rect);
+        rect = new Rectangle(20, xLegLength);
+        rect.x = xStart + (xLegLength / Math.sqrt(2));
+        rect.y = yStart - (20 / Math.sqrt(2));
+        rect.fill = true;
+        rect.fillStyle = 'green';
+        rect.rotation = Math.PI / 4;
+        return canvas.append(rect);
       };
       this.drawO = function(canvas, cellId) {
         return console.log("Drawing O");

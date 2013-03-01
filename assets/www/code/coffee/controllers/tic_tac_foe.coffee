@@ -111,11 +111,11 @@ class TicTacToe extends Game
     #Params: canvas - Canvas the grid will be drawn on.
     @drawGrid = (canvas) ->
       console.log "Drawing Grid"
-      widthIncrement = 500/3;
-      heightIncrement = 500/3;
+      widthIncrement = 500/3
+      heightIncrement = 500/3
 
-      yStart = 0;
-      xStart = 0;
+      yStart = 0
+      xStart = 0
       for scale in [1..2]
         rect = new Rectangle 20, 500
         xStart += widthIncrement
@@ -125,8 +125,8 @@ class TicTacToe extends Game
         rect.fillStyle = 'green'
         canvas.append rect
       
-      xStart = 0;
-      yStart = 0;
+      xStart = 0
+      yStart = 0
       for scale in [1..2]
         yStart += heightIncrement
         rect = new Rectangle 500, 20
@@ -141,12 +141,41 @@ class TicTacToe extends Game
     @initialize = (canvasArg) =>
       @canvas = canvasArg
       @drawGrid(@canvas)
+      @drawX(@canvas,0)
       
     #Method draws X onto the tic tac toe grid at cellId location.
     #Params: canvas - Canvas the X will be drawn on.
     #cellId - Id indicates which cell of the grid the X should be drawn. 
     @drawX = (canvas, cellId) ->
-      console.log "Drawing X"    
+      console.log "Drawing X"
+      widthIncrement = 500/3
+      heightIncrement = 500/3
+      widthOffset = 30
+      heightOffset = 30
+      xPos = cellId % 3
+      yPos = cellId / 3
+      xStart = (xPos*widthIncrement) + widthOffset
+      yStart = (yPos*heightIncrement) + heightOffset
+      xLegLength = heightIncrement - heightOffset
+      rect = new Rectangle 20, xLegLength
+      rect.x = xStart
+      rect.y = yStart
+      rect.fill = true
+      rect.fillStyle = 'green'
+      rect.rotation =  -(Math.PI / 4)
+      canvas.append rect
+      #Starting position of next grid (top, left corner) minus the width offset and thickness of the line
+      #xStart = (xPos*widthIncrement) + (widthIncrement - widthOffset - 20)
+      rect = new Rectangle 20, xLegLength
+      #rect.x = xStart + 5
+      #rect.y = yStart - 15
+      #rect.x = xStart + (xLegLength / Math.sqrt(2)) / 2
+      rect.x = xStart + (xLegLength / Math.sqrt(2))
+      rect.y = yStart - (20/ Math.sqrt(2))
+      rect.fill = true
+      rect.fillStyle = 'green'
+      rect.rotation =  (Math.PI / 4)
+      canvas.append rect
       
     #Method draws O onto the tic tac toe grid at cellId location.
     #Params: canvas - Canvas the O will be drawn on.
