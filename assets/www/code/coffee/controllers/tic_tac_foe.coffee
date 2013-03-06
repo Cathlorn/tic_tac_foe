@@ -11,15 +11,15 @@ class tic_tac_foe
     #Initializes the canvas for drawing
     @setupCanvas = (element) =>
       console.log "Setting Up Canvas"
-      c = E.canvas 500, 500
-      @canvas = new Canvas c
-      element.appendChild c
+      @canvasElement = E.canvas tic_tac_foe.CANVAS_HEIGHT,tic_tac_foe.CANVAS_WIDTH
+      @canvas = new Canvas @canvasElement
+      element.appendChild @canvasElement
     
     #Method prepares a DOM element for displaying Tic Tac Foe within it. 
     #Params: element - DOM element Tic Tac Foe will be placed inside.
     @setupGame = (element) =>
       @setupCanvas element
-      @ticTacToe.initialize(@canvas)
+      @ticTacToe.initialize(@canvas, tic_tac_foe.CANVAS_HEIGHT, tic_tac_foe.CANVAS_WIDTH)
     
     #Stores the primary tic tac toe game being played
     #Scheduler will always have at least tic tac toe present to play.
@@ -28,6 +28,9 @@ class tic_tac_foe
     #Figures out which game is next to play (probably round robin)
     #Each game decides when to terminate or yield. A status of the game is reported each time it exits
     @gameScheduler = new GameScheduler()
+    
+  @CANVAS_HEIGHT=500
+  @CANVAS_WIDTH=500
 
 #Describes the current run status of the game
 GameState =
@@ -41,6 +44,8 @@ WinnerStatus =
   UNDETERMINED: 0
   WINNER: 1
   LOSER: 2
+
+
 
 #Class handles functionality common to all games and mini-games
 class Game
@@ -74,7 +79,7 @@ class Game
       console.log "Resuming game"
       
     #Method prepares the game for launch.
-    @initialize = (canvasArg) =>
+    @initialize = (canvasArg, height, width) =>
       console.log "Initializing game"
     
     #Method suspends game and prepares for another game to launch
@@ -100,49 +105,84 @@ class Game
     #Method unregisters an callback function for when a game terminates
     @unregisterTerminateEvents = (callback) =>
       console.log "Register callback for terminate events"
+      
+#Class keeps track of the dimensions of a given cell in the tic tac toe game
+class CellDimension
+  #Constructor. Creates new instances of the class.
+  constructor: (inits)->
+    @xstart = 0
+    @xend = 0
+    @ystart = 0
+    @yend = 0
 
 #Class handles the operations of the main tic tac toe game.
 #It also schedules minigames to be played
 class TicTacToe extends Game
   #Constructor. Creates new instances of the class.
   constructor: (inits) ->
+
+    #Method triggers when touchstart events are fired
+    #Params - event - Event object describing the touch event that occurred
+    @touchEventHandler = (event) =>
+      console.log("Touch Event Start Called")
+      cellId=@determineCellSelected event.touches[0].pageX, event.touches[0].pageY
+      console.log("CellId: " + cellId)
           
     #Method draws the tic tac toe grid onto the canvas.
     #Params: canvas - Canvas the grid will be drawn on.
     @drawGrid = (canvas) ->
       console.log "Drawing Grid"
-      widthIncrement = 500/3
-      heightIncrement = 500/3
+      widthIncrement = @CANVAS_WIDTH/3
+      heightIncrement = @CANVAS_HEIGHT/3
+
+      @cellLookup = []
 
       yStart = 0
       xStart = 0
       for scale in [1..2]
-        rect = new Rectangle 20, 500
+        rect = new Rectangle @GRID_LINE_THICKNESS, @CANVAS_WIDTH
         xStart += widthIncrement
         rect.x = xStart
         rect.y = yStart
         rect.fill = true
-        rect.fillStyle = 'green'
+        rect.fillStyle = 'green' 
         canvas.append rect
       
       xStart = 0
       yStart = 0
       for scale in [1..2]
         yStart += heightIncrement
-        rect = new Rectangle 500, 20
+        rect = new Rectangle @CANVAS_HEIGHT, @GRID_LINE_THICKNESS
         rect.x = xStart
         rect.y = yStart
         rect.fill = true
         rect.fillStyle = 'green'
         canvas.append rect
+
+      xStart = 0        
+      yStart = 0
+      for i in [1..9]
+          xStart = (widthIncrement) * ((i-1) % 3)
+          yStart = (heightIncrement * (Math.floor (i-1)/3))
+          lookup = new CellDimension()
+          lookup.xstart = xStart
+          lookup.xend = xStart + widthIncrement - @GRID_LINE_THICKNESS
+          lookup.ystart = yStart
+          lookup.yend = yStart + heightIncrement - @GRID_LINE_THICKNESS
+          @cellLookup.push lookup
         
-          
+    @GRID_LINE_THICKNESS=20
+
     #Method prepares the game for launch.
-    @initialize = (canvasArg) =>
+    @initialize = (canvasArg, height, width) =>
       @canvas = canvasArg
+      @CANVAS_HEIGHT = height
+      @CANVAS_WIDTH = width
       @drawGrid(@canvas)
       @drawX(@canvas,0)
       @drawO(@canvas,1)
+      @canvasElement = @canvas.canvas
+      @canvasElement.addEventListener('touchstart', @touchEventHandler, false);
       
     #Method draws X onto the tic tac toe grid at cellId location.
     #Params: canvas - Canvas the X will be drawn on.
@@ -211,17 +251,21 @@ class TicTacToe extends Game
     #Returns -1, if no Cell was selected. Otherwise, the cell id is returned.
     #The cell id is the unique identifier for each cell in the tic tac toe grid going from 0 to 8 assigned
     #from the top, left cell, then incrementing right, then downward.
-    @determineCellSelected = () ->
+    #Param - x - horizontal offset within the canvas of a touch event
+    #Param - y- vertical offset within the canvas of a touch event
+    @determineCellSelected = (x,y) =>
       console.log "Determining Cell Selected"
+      for cellId in [0..(@cellLookup.length - 1)]
+        lookup = @cellLookup[cellId]
+        if((x >= lookup.xstart)&&(x <= lookup.xend)&&(y >= lookup.ystart)&&(y <= lookup.yend))
+          return cellId
+      return -1
+      
    
     #Method decides which player gets to play at the next turn.
     #Returns the playerId associated with the player that will be playing next turn.
     @decideTurn = () ->
       console.log "Determining Next Player Turn"
-
-    #Method triggers when new touch events are triggered on the canvas.
-    @touchEventHandler = () ->
-      console.log "New Touch Event Received"
     
     #Method looks at the current placement of items and determines if there is a winner.
     #Returns -1 if no winner is found. Otherwise, the playerId of the winner is returned.
