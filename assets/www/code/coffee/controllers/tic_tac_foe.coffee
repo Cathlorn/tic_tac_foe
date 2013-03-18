@@ -3,6 +3,41 @@
 #Ramon Ortiz
 #Main script file where game drawing and logic is handled.
 
+#can=undefined
+#stylePaddingLeft = parseInt(document.defaultView.getComputedStyle(can, undefined)['paddingLeft'], 10) || 0
+#stylePaddingTop = parseInt(document.defaultView.getComputedStyle(can, undefined)['paddingTop'], 10) || 0
+#styleBorderLeft = parseInt(document.defaultView.getComputedStyle(can, undefined)['borderLeftWidth'], 10) || 0
+#styleBorderTop = parseInt(document.defaultView.getComputedStyle(can, undefined)['borderTopWidth'], 10) || 0
+#html = document.body.parentNode
+#htmlTop = html.offsetTop
+#htmlLeft = html.offsetLeft
+
+getElementPositionFromEvent = (element, event) ->
+    offsetX = 0
+    offsetY = 0
+
+    # Compute the total offset
+    if (element.offsetParent != undefined)
+        offsetX += element.offsetLeft;
+        offsetY += element.offsetTop;
+        while ((element = element.offsetParent))
+            offsetX += element.offsetLeft;
+            offsetY += element.offsetTop; 
+
+
+    # Add padding and border style widths to offset
+    # Also add the <html> offsets in case there's a position:fixed bar
+    #offsetX += stylePaddingLeft + styleBorderLeft + htmlLeft
+    #offsetY += stylePaddingTop + styleBorderTop + htmlTop
+
+    mx = event.pageX - offsetX
+    my = event.pageY - offsetY
+
+    # We return a simple javascript object (a hash) with x and y defined
+    return {
+        x: mx,
+        y: my
+    };
 
 #Class runs the Tic Tac Foe game within a DOM element.
 class tic_tac_foe
@@ -122,10 +157,11 @@ class TicTacToe extends Game
   constructor: (inits) ->
 
     #Method triggers when touchstart events are fired
-    #Params - event - Event object describing the touch event that occurred
-    @touchEventHandler = (event) =>
+    #Params - touchevent - Event object describing the touch event that occurred
+    @touchEventHandler = (touchevent) =>
       console.log("Touch Event Start Called")
-      cellId=@determineCellSelected event.touches[0].pageX, event.touches[0].pageY
+      touchPosInCanvas=getElementPositionFromEvent(@canvas.canvas, touchevent.targetTouches[0])
+      cellId=@determineCellSelected touchPosInCanvas.x, touchPosInCanvas.y
       console.log("CellId: " + cellId)
           
     #Method draws the tic tac toe grid onto the canvas.
