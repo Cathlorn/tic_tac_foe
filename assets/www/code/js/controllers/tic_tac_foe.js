@@ -168,10 +168,10 @@
           xStart = widthIncrement * ((i - 1) % 3);
           yStart = heightIncrement * (Math.floor((i - 1) / 3));
           lookup = new CellDimension();
-          lookup.xstart = xStart;
-          lookup.xend = xStart + widthIncrement - this.GRID_LINE_THICKNESS;
-          lookup.ystart = yStart;
-          lookup.yend = yStart + heightIncrement - this.GRID_LINE_THICKNESS;
+          lookup.xstart = xStart + this.GRID_LINE_THICKNESS;
+          lookup.xend = xStart + widthIncrement;
+          lookup.ystart = yStart + this.GRID_LINE_THICKNESS;
+          lookup.yend = yStart + heightIncrement;
           _results.push(this.cellLookup.push(lookup));
         }
         return _results;

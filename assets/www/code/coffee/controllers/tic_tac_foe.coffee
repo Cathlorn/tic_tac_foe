@@ -201,10 +201,10 @@ class TicTacToe extends Game
           xStart = (widthIncrement) * ((i-1) % 3)
           yStart = (heightIncrement * (Math.floor (i-1)/3))
           lookup = new CellDimension()
-          lookup.xstart = xStart
-          lookup.xend = xStart + widthIncrement - @GRID_LINE_THICKNESS
-          lookup.ystart = yStart
-          lookup.yend = yStart + heightIncrement - @GRID_LINE_THICKNESS
+          lookup.xstart = xStart + @GRID_LINE_THICKNESS
+          lookup.xend = xStart + widthIncrement
+          lookup.ystart = yStart + @GRID_LINE_THICKNESS
+          lookup.yend = yStart + heightIncrement
           @cellLookup.push lookup
         
     @GRID_LINE_THICKNESS=20
