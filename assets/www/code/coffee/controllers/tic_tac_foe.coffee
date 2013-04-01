@@ -81,7 +81,6 @@ WinnerStatus =
   LOSER: 2
 
 
-
 #Class handles functionality common to all games and mini-games
 class Game
   #Constructor. Creates new instances of the class.
@@ -100,7 +99,7 @@ class Game
       console.log "Retrieving game result"
       
     #Method reports the current player playing the game
-    @getCurrentPlayer = () ->
+    @getCurrentPlayer = () =>
       console.log "Retrieving current player"
       
     #Method gets a game to resume playing from where it was when it was suspended.
@@ -155,6 +154,15 @@ class CellDimension
 class TicTacToe extends Game
   #Constructor. Creates new instances of the class.
   constructor: (inits) ->
+        
+    @currentPlayer = 1
+    
+    #Method returns the current player that is player
+    @getCurrentPlayer = () =>
+      #@gameBaseGetCurrentPlayer()
+      #super
+ 
+      return @currentPlayer
 
     #Method triggers when touchstart events are fired
     #Params - touchevent - Event object describing the touch event that occurred
@@ -163,7 +171,18 @@ class TicTacToe extends Game
       touchPosInCanvas=getElementPositionFromEvent(@canvas.canvas, touchevent.targetTouches[0])
       cellId=@determineCellSelected touchPosInCanvas.x, touchPosInCanvas.y
       console.log("CellId: " + cellId)
-          
+      playerId = @getCurrentPlayer()
+      if(playerId == 1)
+        @drawX(@canvas, cellId)
+      else
+        @drawO(@canvas, cellId)
+        
+      winnerFound = @checkForWinner()
+      if(winnerFound > 0)
+        @announceWinner()
+      else
+        @decideTurn()
+
     #Method draws the tic tac toe grid onto the canvas.
     #Params: canvas - Canvas the grid will be drawn on.
     @drawGrid = (canvas) ->
@@ -230,9 +249,13 @@ class TicTacToe extends Game
       widthOffset = 30
       heightOffset = 30
       xPos = cellId % 3
-      yPos = cellId / 3
+      yPos = Math.floor (cellId / 3)
       xStart = (xPos*widthIncrement) + widthOffset
       yStart = (yPos*heightIncrement) + heightOffset
+      
+      if(yPos > 0)
+        yStart += @GRID_LINE_THICKNESS
+      
       xLegLength = heightIncrement - heightOffset
       rect = new Rectangle 20, xLegLength
       rect.x = xStart
@@ -263,9 +286,13 @@ class TicTacToe extends Game
       heightIncrement = 500/3
       widthOffset = widthIncrement/2 + 10
       circleRadius = (heightIncrement - 40)/2
-      heightOffset = circleRadius/2 - 10
+      heightOffset = heightIncrement/2 + 10
       xPos = cellId % 3
-      yPos = cellId / 3
+      yPos = Math.floor (cellId / 3)
+
+      if(yPos > 0)
+        yStart += @GRID_LINE_THICKNESS
+      
       xStart = (xPos*widthIncrement) + widthOffset
       yStart = (yPos*heightIncrement) + heightOffset
       circle = new Circle circleRadius
@@ -302,11 +329,20 @@ class TicTacToe extends Game
     #Returns the playerId associated with the player that will be playing next turn.
     @decideTurn = () ->
       console.log "Determining Next Player Turn"
+      
+      if(@currentPlayer == 1)
+        @currentPlayer = 2
+      else
+        @currentPlayer = 1
+        
+      return @currentPlayer
+      
     
     #Method looks at the current placement of items and determines if there is a winner.
     #Returns -1 if no winner is found. Otherwise, the playerId of the winner is returned.
     @checkForWinner = () ->
       console.log "Checking for Winner"
+      return -1
 
     #Method sends of notification that a winner of the game has been found.
     #Params: playerId - Unique identifier for players used to report which player won. 

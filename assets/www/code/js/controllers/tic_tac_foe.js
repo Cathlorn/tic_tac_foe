@@ -126,12 +126,28 @@
 
     function TicTacToe(inits) {
       var _this = this;
+      this.currentPlayer = 1;
+      this.getCurrentPlayer = function() {
+        return _this.currentPlayer;
+      };
       this.touchEventHandler = function(touchevent) {
-        var cellId, touchPosInCanvas;
+        var cellId, playerId, touchPosInCanvas, winnerFound;
         console.log("Touch Event Start Called");
         touchPosInCanvas = getElementPositionFromEvent(_this.canvas.canvas, touchevent.targetTouches[0]);
         cellId = _this.determineCellSelected(touchPosInCanvas.x, touchPosInCanvas.y);
-        return console.log("CellId: " + cellId);
+        console.log("CellId: " + cellId);
+        playerId = _this.getCurrentPlayer();
+        if (playerId === 1) {
+          _this.drawX(_this.canvas, cellId);
+        } else {
+          _this.drawO(_this.canvas, cellId);
+        }
+        winnerFound = _this.checkForWinner();
+        if (winnerFound > 0) {
+          return _this.announceWinner();
+        } else {
+          return _this.decideTurn();
+        }
       };
       this.drawGrid = function(canvas) {
         var heightIncrement, i, lookup, rect, scale, widthIncrement, xStart, yStart, _i, _j, _k, _results;
@@ -195,9 +211,12 @@
         widthOffset = 30;
         heightOffset = 30;
         xPos = cellId % 3;
-        yPos = cellId / 3;
+        yPos = Math.floor(cellId / 3);
         xStart = (xPos * widthIncrement) + widthOffset;
         yStart = (yPos * heightIncrement) + heightOffset;
+        if (yPos > 0) {
+          yStart += this.GRID_LINE_THICKNESS;
+        }
         xLegLength = heightIncrement - heightOffset;
         rect = new Rectangle(20, xLegLength);
         rect.x = xStart;
@@ -221,9 +240,12 @@
         heightIncrement = 500 / 3;
         widthOffset = widthIncrement / 2 + 10;
         circleRadius = (heightIncrement - 40) / 2;
-        heightOffset = circleRadius / 2 - 10;
+        heightOffset = heightIncrement / 2 + 10;
         xPos = cellId % 3;
-        yPos = cellId / 3;
+        yPos = Math.floor(cellId / 3);
+        if (yPos > 0) {
+          yStart += this.GRID_LINE_THICKNESS;
+        }
         xStart = (xPos * widthIncrement) + widthOffset;
         yStart = (yPos * heightIncrement) + heightOffset;
         circle = new Circle(circleRadius);
@@ -249,10 +271,17 @@
         return -1;
       };
       this.decideTurn = function() {
-        return console.log("Determining Next Player Turn");
+        console.log("Determining Next Player Turn");
+        if (this.currentPlayer === 1) {
+          this.currentPlayer = 2;
+        } else {
+          this.currentPlayer = 1;
+        }
+        return this.currentPlayer;
       };
       this.checkForWinner = function() {
-        return console.log("Checking for Winner");
+        console.log("Checking for Winner");
+        return -1;
       };
       this.announceWinner = function(playerId) {
         return console.log("Announcing Winner");
