@@ -155,6 +155,7 @@
         widthIncrement = this.CANVAS_WIDTH / 3;
         heightIncrement = this.CANVAS_HEIGHT / 3;
         this.cellLookup = [];
+        this.claimedCells = [];
         yStart = 0;
         xStart = 0;
         for (scale = _i = 1; _i <= 2; scale = ++_i) {
@@ -188,7 +189,8 @@
           lookup.xend = xStart + widthIncrement;
           lookup.ystart = yStart + this.GRID_LINE_THICKNESS;
           lookup.yend = yStart + heightIncrement;
-          _results.push(this.cellLookup.push(lookup));
+          this.cellLookup.push(lookup);
+          _results.push(this.claimedCells.push(0));
         }
         return _results;
       };
@@ -204,57 +206,69 @@
         return _this.canvasElement.addEventListener('touchstart', _this.touchEventHandler, false);
       };
       this.drawX = function(canvas, cellId) {
-        var heightIncrement, heightOffset, rect, widthIncrement, widthOffset, xLegLength, xPos, xStart, yPos, yStart;
+        var heightIncrement, heightOffset, player, rect, widthIncrement, widthOffset, xLegLength, xPos, xStart, yPos, yStart;
         console.log("Drawing X");
-        widthIncrement = 500 / 3;
-        heightIncrement = 500 / 3;
-        widthOffset = 30;
-        heightOffset = 30;
-        xPos = cellId % 3;
-        yPos = Math.floor(cellId / 3);
-        xStart = (xPos * widthIncrement) + widthOffset;
-        yStart = (yPos * heightIncrement) + heightOffset;
-        if (yPos > 0) {
-          yStart += this.GRID_LINE_THICKNESS;
+        player = _this.claimedCells[cellId];
+        if (player <= 0) {
+          widthIncrement = 500 / 3;
+          heightIncrement = 500 / 3;
+          widthOffset = 30;
+          heightOffset = 30;
+          xPos = cellId % 3;
+          yPos = Math.floor(cellId / 3);
+          xStart = (xPos * widthIncrement) + widthOffset;
+          yStart = (yPos * heightIncrement) + heightOffset;
+          if (yPos > 0) {
+            yStart += _this.GRID_LINE_THICKNESS;
+          }
+          xLegLength = heightIncrement - heightOffset;
+          rect = new Rectangle(20, xLegLength);
+          rect.x = xStart;
+          rect.y = yStart;
+          rect.fill = true;
+          rect.fillStyle = 'green';
+          rect.rotation = -(Math.PI / 4);
+          canvas.append(rect);
+          rect = new Rectangle(20, xLegLength);
+          rect.x = xStart + (xLegLength / Math.sqrt(2));
+          rect.y = yStart - (20 / Math.sqrt(2));
+          rect.fill = true;
+          rect.fillStyle = 'green';
+          rect.rotation = Math.PI / 4;
+          canvas.append(rect);
+          return _this.claimedCells[cellId] = _this.getCurrentPlayer();
+        } else {
+          return alert("Cannot pick square");
         }
-        xLegLength = heightIncrement - heightOffset;
-        rect = new Rectangle(20, xLegLength);
-        rect.x = xStart;
-        rect.y = yStart;
-        rect.fill = true;
-        rect.fillStyle = 'green';
-        rect.rotation = -(Math.PI / 4);
-        canvas.append(rect);
-        rect = new Rectangle(20, xLegLength);
-        rect.x = xStart + (xLegLength / Math.sqrt(2));
-        rect.y = yStart - (20 / Math.sqrt(2));
-        rect.fill = true;
-        rect.fillStyle = 'green';
-        rect.rotation = Math.PI / 4;
-        return canvas.append(rect);
       };
       this.drawO = function(canvas, cellId) {
-        var circle, circleRadius, heightIncrement, heightOffset, widthIncrement, widthOffset, xPos, xStart, yPos, yStart;
+        var circle, circleRadius, heightIncrement, heightOffset, player, widthIncrement, widthOffset, xPos, xStart, yPos, yStart;
         console.log("Drawing O");
-        widthIncrement = 500 / 3;
-        heightIncrement = 500 / 3;
-        widthOffset = widthIncrement / 2 + 10;
-        circleRadius = (heightIncrement - 40) / 2;
-        heightOffset = heightIncrement / 2 + 10;
-        xPos = cellId % 3;
-        yPos = Math.floor(cellId / 3);
-        if (yPos > 0) {
-          yStart += this.GRID_LINE_THICKNESS;
+        player = _this.claimedCells[cellId];
+        if (player <= 0) {
+          widthIncrement = 500 / 3;
+          heightIncrement = 500 / 3;
+          widthOffset = widthIncrement / 2 + 10;
+          circleRadius = (heightIncrement - 40) / 2;
+          heightOffset = heightIncrement / 2 + 10;
+          xPos = cellId % 3;
+          yPos = Math.floor(cellId / 3);
+          if (yPos > 0) {
+            yStart += _this.GRID_LINE_THICKNESS;
+          }
+          xStart = (xPos * widthIncrement) + widthOffset;
+          yStart = (yPos * heightIncrement) + heightOffset;
+          circle = new Circle(circleRadius);
+          circle.x = xStart;
+          circle.y = yStart;
+          circle.strokeWidth = 10;
+          circle.stroke = 'black';
+          circle.strokeOpacity = 1;
+          canvas.append(circle);
+          return _this.claimedCells[cellId] = _this.getCurrentPlayer();
+        } else {
+          return alert("Cannot pick square");
         }
-        xStart = (xPos * widthIncrement) + widthOffset;
-        yStart = (yPos * heightIncrement) + heightOffset;
-        circle = new Circle(circleRadius);
-        circle.x = xStart;
-        circle.y = yStart;
-        circle.strokeWidth = 10;
-        circle.stroke = 'black';
-        circle.strokeOpacity = 1;
-        return canvas.append(circle);
       };
       this.drawAnimation = function(canvas, animationType) {
         return console.log("Drawing Animation");
@@ -269,6 +283,53 @@
           }
         }
         return -1;
+      };
+      this.checkColumn = function(col) {
+        var match, player;
+        console.log("Checking Column");
+        match = true;
+        player = _this.claimedCells[col];
+        if (player !== _this.claimedCells[col + 3]) {
+          match = false;
+        }
+        if (player !== _this.claimedCells[col + 6]) {
+          match = false;
+        }
+        return match;
+      };
+      this.checkRow = function(row) {
+        var match, player;
+        console.log("Checking Rows");
+        match = true;
+        player = _this.claimedCells[row * 3];
+        if (player !== _this.claimedCells[row * 3 + 1]) {
+          match = false;
+        }
+        if (player !== _this.claimedCells[row * 3 + 2]) {
+          match = false;
+        }
+        return match;
+      };
+      this.checkDiagonals = function() {
+        var Diag1Match, Diag2Match, player;
+        console.log("Checking Diagonals");
+        Diag1Match = true;
+        player = _this.claimedCells[1];
+        if (player !== _this.claimedCells[5]) {
+          Diag1Match = false;
+        }
+        if (player !== _this.claimedCells[9]) {
+          Diag1Match = false;
+        }
+        Diag2Match = true;
+        player = _this.claimedCells[3];
+        if (player !== _this.claimedCells[5]) {
+          Diag2Match = false;
+        }
+        if (player !== _this.claimedCells[7]) {
+          Diag2Match = false;
+        }
+        return Diag1Match || Diag2Match;
       };
       this.decideTurn = function() {
         console.log("Determining Next Player Turn");

@@ -154,14 +154,11 @@ class CellDimension
 class TicTacToe extends Game
   #Constructor. Creates new instances of the class.
   constructor: (inits) ->
-        
+            
     @currentPlayer = 1
     
     #Method returns the current player that is player
-    @getCurrentPlayer = () =>
-      #@gameBaseGetCurrentPlayer()
-      #super
- 
+    @getCurrentPlayer = () => 
       return @currentPlayer
 
     #Method triggers when touchstart events are fired
@@ -191,6 +188,7 @@ class TicTacToe extends Game
       heightIncrement = @CANVAS_HEIGHT/3
 
       @cellLookup = []
+      @claimedCells = []
 
       yStart = 0
       xStart = 0
@@ -225,6 +223,7 @@ class TicTacToe extends Game
           lookup.ystart = yStart + @GRID_LINE_THICKNESS
           lookup.yend = yStart + heightIncrement
           @cellLookup.push lookup
+          @claimedCells.push 0
         
     @GRID_LINE_THICKNESS=20
 
@@ -242,67 +241,75 @@ class TicTacToe extends Game
     #Method draws X onto the tic tac toe grid at cellId location.
     #Params: canvas - Canvas the X will be drawn on.
     #cellId - Id indicates which cell of the grid the X should be drawn. 
-    @drawX = (canvas, cellId) ->
+    @drawX = (canvas, cellId) =>
       console.log "Drawing X"
-      widthIncrement = 500/3
-      heightIncrement = 500/3
-      widthOffset = 30
-      heightOffset = 30
-      xPos = cellId % 3
-      yPos = Math.floor (cellId / 3)
-      xStart = (xPos*widthIncrement) + widthOffset
-      yStart = (yPos*heightIncrement) + heightOffset
+      player = @claimedCells[cellId]
       
-      if(yPos > 0)
-        yStart += @GRID_LINE_THICKNESS
+      if(player <= 0)
+        widthIncrement = 500/3
+        heightIncrement = 500/3
+        widthOffset = 30
+        heightOffset = 30
+        xPos = cellId % 3
+        yPos = Math.floor (cellId / 3)
+        xStart = (xPos*widthIncrement) + widthOffset
+        yStart = (yPos*heightIncrement) + heightOffset
       
-      xLegLength = heightIncrement - heightOffset
-      rect = new Rectangle 20, xLegLength
-      rect.x = xStart
-      rect.y = yStart
-      rect.fill = true
-      rect.fillStyle = 'green'
-      rect.rotation =  -(Math.PI / 4)
-      canvas.append rect
-      #Starting position of next grid (top, left corner) minus the width offset and thickness of the line
-      #xStart = (xPos*widthIncrement) + (widthIncrement - widthOffset - 20)
-      rect = new Rectangle 20, xLegLength
-      #rect.x = xStart + 5
-      #rect.y = yStart - 15
-      #rect.x = xStart + (xLegLength / Math.sqrt(2)) / 2
-      rect.x = xStart + (xLegLength / Math.sqrt(2))
-      rect.y = yStart - (20/ Math.sqrt(2))
-      rect.fill = true
-      rect.fillStyle = 'green'
-      rect.rotation =  (Math.PI / 4)
-      canvas.append rect
+        if(yPos > 0)
+          yStart += @GRID_LINE_THICKNESS
+      
+        xLegLength = heightIncrement - heightOffset
+        rect = new Rectangle 20, xLegLength
+        rect.x = xStart
+        rect.y = yStart
+        rect.fill = true
+        rect.fillStyle = 'green'
+        rect.rotation =  -(Math.PI / 4)
+        canvas.append rect
+        #Starting position of next grid (top, left corner) minus the width offset and thickness of the line
+        rect = new Rectangle 20, xLegLength
+        rect.x = xStart + (xLegLength / Math.sqrt(2))
+        rect.y = yStart - (20/ Math.sqrt(2))
+        rect.fill = true
+        rect.fillStyle = 'green'
+        rect.rotation =  (Math.PI / 4)
+        canvas.append rect
+        @claimedCells[cellId] = @getCurrentPlayer()
+      else
+        alert "Cannot pick square"
       
     #Method draws O onto the tic tac toe grid at cellId location.
     #Params: canvas - Canvas the O will be drawn on.
     #cellId - Id indicates which cell of the grid the O should be drawn.
-    @drawO = (canvas, cellId) ->
+    @drawO = (canvas, cellId) =>
       console.log "Drawing O"
-      widthIncrement = 500/3
-      heightIncrement = 500/3
-      widthOffset = widthIncrement/2 + 10
-      circleRadius = (heightIncrement - 40)/2
-      heightOffset = heightIncrement/2 + 10
-      xPos = cellId % 3
-      yPos = Math.floor (cellId / 3)
-
-      if(yPos > 0)
-        yStart += @GRID_LINE_THICKNESS
+      player = @claimedCells[cellId]
       
-      xStart = (xPos*widthIncrement) + widthOffset
-      yStart = (yPos*heightIncrement) + heightOffset
-      circle = new Circle circleRadius
-      circle.x = xStart
-      circle.y = yStart
-      circle.strokeWidth = 10
-      circle.stroke = 'black'
-      circle.strokeOpacity = 1
-      #circle.fill = true
-      canvas.append circle
+      if(player <= 0)
+        widthIncrement = 500/3
+        heightIncrement = 500/3
+        widthOffset = widthIncrement/2 + 10
+        circleRadius = (heightIncrement - 40)/2
+        heightOffset = heightIncrement/2 + 10
+        xPos = cellId % 3
+        yPos = Math.floor (cellId / 3)
+
+        if(yPos > 0)
+          yStart += @GRID_LINE_THICKNESS
+      
+        xStart = (xPos*widthIncrement) + widthOffset
+        yStart = (yPos*heightIncrement) + heightOffset
+        circle = new Circle circleRadius
+        circle.x = xStart
+        circle.y = yStart
+        circle.strokeWidth = 10
+        circle.stroke = 'black'
+        circle.strokeOpacity = 1
+        #circle.fill = true
+        canvas.append circle
+        @claimedCells[cellId] = @getCurrentPlayer()
+      else
+        alert "Cannot pick square"
       
     #Method draws an animation sequence onto the canvas.
     #Params: canvas - Canvas the animation will be drawn on.
@@ -323,6 +330,58 @@ class TicTacToe extends Game
         if((x >= lookup.xstart)&&(x <= lookup.xend)&&(y >= lookup.ystart)&&(y <= lookup.yend))
           return cellId
       return -1
+      
+    #Method determines if there is a winner at the specified column
+    @checkColumn = (col) =>
+      console.log "Checking Column"
+      match = true
+
+      player = @claimedCells[col]
+      if(player != @claimedCells[col + 3])
+        match = false
+        
+      if(player != @claimedCells[col + 6])
+        match = false
+        
+      return match
+
+    #Method determines if there is a winner at the specified row
+    @checkRow = (row) =>
+      console.log "Checking Rows"
+      match = true
+
+      player = @claimedCells[row*3]
+      if(player != @claimedCells[row*3 + 1])
+        match = false
+        
+      if(player != @claimedCells[row*3 + 2])
+        match = false
+        
+      return match
+      
+      
+    #Method determines if there is a winner along the two diagonal
+    #possibilities.
+    @checkDiagonals = () =>
+      console.log "Checking Diagonals"
+
+      Diag1Match = true
+      player = @claimedCells[1]
+      if(player != @claimedCells[5])
+        Diag1Match = false
+        
+      if(player != @claimedCells[9])
+        Diag1Match = false
+        
+      Diag2Match = true
+      player = @claimedCells[3]
+      if(player != @claimedCells[5])
+        Diag2Match = false
+        
+      if(player != @claimedCells[7])
+        Diag2Match = false
+        
+      return Diag1Match || Diag2Match
       
    
     #Method decides which player gets to play at the next turn.
