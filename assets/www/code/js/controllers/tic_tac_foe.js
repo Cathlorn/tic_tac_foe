@@ -145,7 +145,7 @@
           } else {
             _this.drawO(_this.canvas, cellId);
           }
-          winner = _this.checkForWinner(cellId, playerId);
+          winner = _this.updateWinner(cellId, playerId);
           if (winner > 0) {
             return _this.announceWinner(winner);
           } else {
@@ -344,9 +344,20 @@
         }
         return Diag1Match || Diag2Match;
       };
-      this.checkForWinner = function(cellId, playerId) {
+      this.allCellsOccupied = function() {
+        var cellId, exhausted, _i;
+        console.log("Checking if all cells are occupied");
+        exhausted = true;
+        for (cellId = _i = 0; _i <= 8; cellId = ++_i) {
+          if (_this.claimedCells[cellId] === 0) {
+            exhausted = false;
+          }
+        }
+        return exhausted;
+      };
+      this.updateWinner = function(cellId, playerId) {
         var matchFound, winnerFound;
-        console.log("Checking for Winner");
+        console.log("Updaing Winner Status");
         if (_this.gameWinner === 0) {
           winnerFound = -1;
           matchFound = _this.checkColumn(cellId % 3) || _this.checkDiagonals() || _this.checkRow(Math.floor(cellId / 3));
@@ -355,7 +366,16 @@
             _this.currentGameState = GameState.GAME_TERMINATED;
             _this.gameWinner = playerId;
           }
+          if (_this.allCellsOccupied()) {
+            alert("Tie reached!");
+            _this.addMiniGameToScheduler();
+            _this.currentGameState = GameState.GAME_SUSPENDED;
+          }
         }
+        return _this.gameWinner;
+      };
+      this.checkForWinner = function(cellId, playerId) {
+        console.log("Checking for Winner");
         return _this.gameWinner;
       };
       this.announceWinner = function(playerId) {

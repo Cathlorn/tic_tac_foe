@@ -183,7 +183,7 @@ class TicTacToe extends Game
         else
           @drawO(@canvas, cellId)
         
-        winner = @checkForWinner(cellId, playerId)
+        winner = @updateWinner(cellId, playerId)
         if(winner > 0)
           @announceWinner(winner)
         else
@@ -404,10 +404,22 @@ class TicTacToe extends Game
         
       return Diag1Match || Diag2Match
  
-    #Method looks at the current placement of items and determines if there is a winner.
+    #Method determines all cells of the board
+    #are already occupied.
+    @allCellsOccupied = () =>
+      console.log "Checking if all cells are occupied"
+       
+      exhausted = true
+      for cellId in [0..8]
+          if(@claimedCells[cellId] == 0)
+            exhausted = false
+
+      return exhausted
+
+    #Method checks to see if a winner has been reached with the last claimed cell
     #Returns -1 if no winner is found. Otherwise, the playerId of the winner is returned.
-    @checkForWinner = (cellId, playerId) =>
-      console.log "Checking for Winner"
+    @updateWinner = (cellId, playerId) =>
+      console.log "Updaing Winner Status"
       
       if(@gameWinner == 0)
         winnerFound = -1
@@ -417,7 +429,19 @@ class TicTacToe extends Game
           winnerFound = playerId
           @currentGameState = GameState.GAME_TERMINATED
           @gameWinner = playerId
+        
+        if(@allCellsOccupied())
+          alert "Tie reached!"
+          @addMiniGameToScheduler()
+          @currentGameState = GameState.GAME_SUSPENDED
       
+      return @gameWinner
+      
+    #Method looks at the current placement of items and determines if there is a winner.
+    #Returns -1 if no winner is found. Otherwise, the playerId of the winner is returned.
+    @checkForWinner = (cellId, playerId) =>
+      console.log "Checking for Winner"
+       
       return @gameWinner
 
     #Method sends of notification that a winner of the game has been found.
