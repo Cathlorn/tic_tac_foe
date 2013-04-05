@@ -157,6 +157,12 @@ class TicTacToe extends Game
             
     @currentPlayer = 1
     
+    #Field represents the winner of the current game in progress.
+    @gameWinner = 0
+    
+    #Field represents the state the game is presently running under.
+    @currentGameState = GameState.GAME_UNSTARTED
+    
     #Method returns the current player that is player
     @getCurrentPlayer = () => 
       return @currentPlayer
@@ -165,20 +171,23 @@ class TicTacToe extends Game
     #Params - touchevent - Event object describing the touch event that occurred
     @touchEventHandler = (touchevent) =>
       console.log("Touch Event Start Called")
-      touchPosInCanvas=getElementPositionFromEvent(@canvas.canvas, touchevent.targetTouches[0])
-      cellId=@determineCellSelected touchPosInCanvas.x, touchPosInCanvas.y
-      console.log("CellId: " + cellId)
-      playerId = @getCurrentPlayer()
-      if(playerId == 1)
-        @drawX(@canvas, cellId)
-      else
-        @drawO(@canvas, cellId)
+      
+      #Checks that the game is still running
+      if(@getGameState() == GameState.GAME_IN_PROGRESS)
+        touchPosInCanvas=getElementPositionFromEvent(@canvas.canvas, touchevent.targetTouches[0])
+        cellId=@determineCellSelected touchPosInCanvas.x, touchPosInCanvas.y
+        console.log("CellId: " + cellId)
+        playerId = @getCurrentPlayer()
+        if(playerId == 1)
+          @drawX(@canvas, cellId)
+        else
+          @drawO(@canvas, cellId)
         
-      winner = @checkForWinner(cellId, playerId)
-      if(winner > 0)
-        @announceWinner(winner)
-      else
-        @decideTurn()
+        winner = @checkForWinner(cellId, playerId)
+        if(winner > 0)
+          @announceWinner(winner)
+        else
+          @decideTurn()
 
     #Method draws the tic tac toe grid onto the canvas.
     #Params: canvas - Canvas the grid will be drawn on.
@@ -235,6 +244,8 @@ class TicTacToe extends Game
       @drawGrid(@canvas)
       @canvasElement = @canvas.canvas
       @canvasElement.addEventListener('touchstart', @touchEventHandler, false);
+      @currentGameState = GameState.GAME_IN_PROGRESS
+      @gameWinner = 0
       
     #Method draws X onto the tic tac toe grid at cellId location.
     #Params: canvas - Canvas the X will be drawn on.
@@ -327,7 +338,19 @@ class TicTacToe extends Game
         lookup = @cellLookup[cellId]
         if((x >= lookup.xstart)&&(x <= lookup.xend)&&(y >= lookup.ystart)&&(y <= lookup.yend))
           return cellId
-      return -1
+      return -1      
+   
+    #Method decides which player gets to play at the next turn.
+    #Returns the playerId associated with the player that will be playing next turn.
+    @decideTurn = () ->
+      console.log "Determining Next Player Turn"
+      
+      if(@currentPlayer == 1)
+        @currentPlayer = 2
+      else
+        @currentPlayer = 1
+        
+      return @currentPlayer
       
     #Method determines if there is a winner at the specified column
     @checkColumn = (col) =>
@@ -380,32 +403,22 @@ class TicTacToe extends Game
         Diag2Match = false
         
       return Diag1Match || Diag2Match
-      
-   
-    #Method decides which player gets to play at the next turn.
-    #Returns the playerId associated with the player that will be playing next turn.
-    @decideTurn = () ->
-      console.log "Determining Next Player Turn"
-      
-      if(@currentPlayer == 1)
-        @currentPlayer = 2
-      else
-        @currentPlayer = 1
-        
-      return @currentPlayer
-      
-    
+ 
     #Method looks at the current placement of items and determines if there is a winner.
     #Returns -1 if no winner is found. Otherwise, the playerId of the winner is returned.
     @checkForWinner = (cellId, playerId) =>
       console.log "Checking for Winner"
-      winnerFound = -1
       
-      matchFound = @checkColumn(cellId%3) || @checkDiagonals() || @checkRow(Math.floor cellId/3)
-      if(matchFound)
-        winnerFound = playerId
+      if(@gameWinner == 0)
+        winnerFound = -1
       
-      return winnerFound
+        matchFound = @checkColumn(cellId%3) || @checkDiagonals() || @checkRow(Math.floor cellId/3)
+        if(matchFound)
+          winnerFound = playerId
+          @currentGameState = GameState.GAME_TERMINATED
+          @gameWinner = playerId
+      
+      return @gameWinner
 
     #Method sends of notification that a winner of the game has been found.
     #Params: playerId - Unique identifier for players used to report which player won. 
@@ -416,6 +429,11 @@ class TicTacToe extends Game
     #Method chooses the mini-game that will play this game yields. 
     @addMiniGameToScheduler = () ->
       console.log "Adding Mini-Game"
+      
+    #Method reports the current state of the game
+    @getGameState = () ->
+      console.log "Retrieving game state"
+      return @currentGameState
 
 #Class controls which game is playing within TicTacFoe
 class GameScheduler

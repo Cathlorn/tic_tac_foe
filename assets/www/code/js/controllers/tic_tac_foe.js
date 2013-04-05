@@ -127,26 +127,30 @@
     function TicTacToe(inits) {
       var _this = this;
       this.currentPlayer = 1;
+      this.gameWinner = 0;
+      this.currentGameState = GameState.GAME_UNSTARTED;
       this.getCurrentPlayer = function() {
         return _this.currentPlayer;
       };
       this.touchEventHandler = function(touchevent) {
         var cellId, playerId, touchPosInCanvas, winner;
         console.log("Touch Event Start Called");
-        touchPosInCanvas = getElementPositionFromEvent(_this.canvas.canvas, touchevent.targetTouches[0]);
-        cellId = _this.determineCellSelected(touchPosInCanvas.x, touchPosInCanvas.y);
-        console.log("CellId: " + cellId);
-        playerId = _this.getCurrentPlayer();
-        if (playerId === 1) {
-          _this.drawX(_this.canvas, cellId);
-        } else {
-          _this.drawO(_this.canvas, cellId);
-        }
-        winner = _this.checkForWinner(cellId, playerId);
-        if (winner > 0) {
-          return _this.announceWinner(winner);
-        } else {
-          return _this.decideTurn();
+        if (_this.getGameState() === GameState.GAME_IN_PROGRESS) {
+          touchPosInCanvas = getElementPositionFromEvent(_this.canvas.canvas, touchevent.targetTouches[0]);
+          cellId = _this.determineCellSelected(touchPosInCanvas.x, touchPosInCanvas.y);
+          console.log("CellId: " + cellId);
+          playerId = _this.getCurrentPlayer();
+          if (playerId === 1) {
+            _this.drawX(_this.canvas, cellId);
+          } else {
+            _this.drawO(_this.canvas, cellId);
+          }
+          winner = _this.checkForWinner(cellId, playerId);
+          if (winner > 0) {
+            return _this.announceWinner(winner);
+          } else {
+            return _this.decideTurn();
+          }
         }
       };
       this.drawGrid = function(canvas) {
@@ -201,7 +205,9 @@
         _this.CANVAS_WIDTH = width;
         _this.drawGrid(_this.canvas);
         _this.canvasElement = _this.canvas.canvas;
-        return _this.canvasElement.addEventListener('touchstart', _this.touchEventHandler, false);
+        _this.canvasElement.addEventListener('touchstart', _this.touchEventHandler, false);
+        _this.currentGameState = GameState.GAME_IN_PROGRESS;
+        return _this.gameWinner = 0;
       };
       this.drawX = function(canvas, cellId) {
         var heightIncrement, heightOffset, player, rect, widthIncrement, widthOffset, xLegLength, xPos, xStart, yPos, yStart;
@@ -282,6 +288,15 @@
         }
         return -1;
       };
+      this.decideTurn = function() {
+        console.log("Determining Next Player Turn");
+        if (this.currentPlayer === 1) {
+          this.currentPlayer = 2;
+        } else {
+          this.currentPlayer = 1;
+        }
+        return this.currentPlayer;
+      };
       this.checkColumn = function(col) {
         var match, player;
         console.log("Checking Column");
@@ -329,24 +344,19 @@
         }
         return Diag1Match || Diag2Match;
       };
-      this.decideTurn = function() {
-        console.log("Determining Next Player Turn");
-        if (this.currentPlayer === 1) {
-          this.currentPlayer = 2;
-        } else {
-          this.currentPlayer = 1;
-        }
-        return this.currentPlayer;
-      };
       this.checkForWinner = function(cellId, playerId) {
         var matchFound, winnerFound;
         console.log("Checking for Winner");
-        winnerFound = -1;
-        matchFound = _this.checkColumn(cellId % 3) || _this.checkDiagonals() || _this.checkRow(Math.floor(cellId / 3));
-        if (matchFound) {
-          winnerFound = playerId;
+        if (_this.gameWinner === 0) {
+          winnerFound = -1;
+          matchFound = _this.checkColumn(cellId % 3) || _this.checkDiagonals() || _this.checkRow(Math.floor(cellId / 3));
+          if (matchFound) {
+            winnerFound = playerId;
+            _this.currentGameState = GameState.GAME_TERMINATED;
+            _this.gameWinner = playerId;
+          }
         }
-        return winnerFound;
+        return _this.gameWinner;
       };
       this.announceWinner = function(playerId) {
         console.log("Announcing Winner");
@@ -354,6 +364,10 @@
       };
       this.addMiniGameToScheduler = function() {
         return console.log("Adding Mini-Game");
+      };
+      this.getGameState = function() {
+        console.log("Retrieving game state");
+        return this.currentGameState;
       };
     }
 
