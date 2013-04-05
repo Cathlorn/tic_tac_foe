@@ -174,9 +174,9 @@ class TicTacToe extends Game
       else
         @drawO(@canvas, cellId)
         
-      winnerFound = @checkForWinner()
-      if(winnerFound > 0)
-        @announceWinner()
+      winner = @checkForWinner(cellId, playerId)
+      if(winner > 0)
+        @announceWinner(winner)
       else
         @decideTurn()
 
@@ -233,8 +233,6 @@ class TicTacToe extends Game
       @CANVAS_HEIGHT = height
       @CANVAS_WIDTH = width
       @drawGrid(@canvas)
-      @drawX(@canvas,0)
-      @drawO(@canvas,1)
       @canvasElement = @canvas.canvas
       @canvasElement.addEventListener('touchstart', @touchEventHandler, false);
       
@@ -334,9 +332,9 @@ class TicTacToe extends Game
     #Method determines if there is a winner at the specified column
     @checkColumn = (col) =>
       console.log "Checking Column"
-      match = true
 
       player = @claimedCells[col]
+      match = (player > 0)
       if(player != @claimedCells[col + 3])
         match = false
         
@@ -348,9 +346,9 @@ class TicTacToe extends Game
     #Method determines if there is a winner at the specified row
     @checkRow = (row) =>
       console.log "Checking Rows"
-      match = true
-
+      
       player = @claimedCells[row*3]
+      match = (player > 0)
       if(player != @claimedCells[row*3 + 1])
         match = false
         
@@ -365,20 +363,20 @@ class TicTacToe extends Game
     @checkDiagonals = () =>
       console.log "Checking Diagonals"
 
-      Diag1Match = true
-      player = @claimedCells[1]
-      if(player != @claimedCells[5])
+      player = @claimedCells[0]
+      Diag1Match = (player > 0)
+      if(player != @claimedCells[4])
         Diag1Match = false
         
-      if(player != @claimedCells[9])
+      if(player != @claimedCells[8])
         Diag1Match = false
         
-      Diag2Match = true
-      player = @claimedCells[3]
-      if(player != @claimedCells[5])
+      player = @claimedCells[2]
+      Diag2Match = (player > 0)
+      if(player != @claimedCells[4])
         Diag2Match = false
         
-      if(player != @claimedCells[7])
+      if(player != @claimedCells[6])
         Diag2Match = false
         
       return Diag1Match || Diag2Match
@@ -399,14 +397,21 @@ class TicTacToe extends Game
     
     #Method looks at the current placement of items and determines if there is a winner.
     #Returns -1 if no winner is found. Otherwise, the playerId of the winner is returned.
-    @checkForWinner = () ->
+    @checkForWinner = (cellId, playerId) =>
       console.log "Checking for Winner"
-      return -1
+      winnerFound = -1
+      
+      matchFound = @checkColumn(cellId%3) || @checkDiagonals() || @checkRow(Math.floor cellId/3)
+      if(matchFound)
+        winnerFound = playerId
+      
+      return winnerFound
 
     #Method sends of notification that a winner of the game has been found.
     #Params: playerId - Unique identifier for players used to report which player won. 
     @announceWinner = (playerId) ->
       console.log "Announcing Winner"
+      alert "Player " + playerId + " wins!"
       
     #Method chooses the mini-game that will play this game yields. 
     @addMiniGameToScheduler = () ->

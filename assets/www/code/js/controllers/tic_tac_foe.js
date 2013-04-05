@@ -131,7 +131,7 @@
         return _this.currentPlayer;
       };
       this.touchEventHandler = function(touchevent) {
-        var cellId, playerId, touchPosInCanvas, winnerFound;
+        var cellId, playerId, touchPosInCanvas, winner;
         console.log("Touch Event Start Called");
         touchPosInCanvas = getElementPositionFromEvent(_this.canvas.canvas, touchevent.targetTouches[0]);
         cellId = _this.determineCellSelected(touchPosInCanvas.x, touchPosInCanvas.y);
@@ -142,9 +142,9 @@
         } else {
           _this.drawO(_this.canvas, cellId);
         }
-        winnerFound = _this.checkForWinner();
-        if (winnerFound > 0) {
-          return _this.announceWinner();
+        winner = _this.checkForWinner(cellId, playerId);
+        if (winner > 0) {
+          return _this.announceWinner(winner);
         } else {
           return _this.decideTurn();
         }
@@ -200,8 +200,6 @@
         _this.CANVAS_HEIGHT = height;
         _this.CANVAS_WIDTH = width;
         _this.drawGrid(_this.canvas);
-        _this.drawX(_this.canvas, 0);
-        _this.drawO(_this.canvas, 1);
         _this.canvasElement = _this.canvas.canvas;
         return _this.canvasElement.addEventListener('touchstart', _this.touchEventHandler, false);
       };
@@ -287,8 +285,8 @@
       this.checkColumn = function(col) {
         var match, player;
         console.log("Checking Column");
-        match = true;
         player = _this.claimedCells[col];
+        match = player > 0;
         if (player !== _this.claimedCells[col + 3]) {
           match = false;
         }
@@ -300,8 +298,8 @@
       this.checkRow = function(row) {
         var match, player;
         console.log("Checking Rows");
-        match = true;
         player = _this.claimedCells[row * 3];
+        match = player > 0;
         if (player !== _this.claimedCells[row * 3 + 1]) {
           match = false;
         }
@@ -313,20 +311,20 @@
       this.checkDiagonals = function() {
         var Diag1Match, Diag2Match, player;
         console.log("Checking Diagonals");
-        Diag1Match = true;
-        player = _this.claimedCells[1];
-        if (player !== _this.claimedCells[5]) {
+        player = _this.claimedCells[0];
+        Diag1Match = player > 0;
+        if (player !== _this.claimedCells[4]) {
           Diag1Match = false;
         }
-        if (player !== _this.claimedCells[9]) {
+        if (player !== _this.claimedCells[8]) {
           Diag1Match = false;
         }
-        Diag2Match = true;
-        player = _this.claimedCells[3];
-        if (player !== _this.claimedCells[5]) {
+        player = _this.claimedCells[2];
+        Diag2Match = player > 0;
+        if (player !== _this.claimedCells[4]) {
           Diag2Match = false;
         }
-        if (player !== _this.claimedCells[7]) {
+        if (player !== _this.claimedCells[6]) {
           Diag2Match = false;
         }
         return Diag1Match || Diag2Match;
@@ -340,12 +338,19 @@
         }
         return this.currentPlayer;
       };
-      this.checkForWinner = function() {
+      this.checkForWinner = function(cellId, playerId) {
+        var matchFound, winnerFound;
         console.log("Checking for Winner");
-        return -1;
+        winnerFound = -1;
+        matchFound = _this.checkColumn(cellId % 3) || _this.checkDiagonals() || _this.checkRow(Math.floor(cellId / 3));
+        if (matchFound) {
+          winnerFound = playerId;
+        }
+        return winnerFound;
       };
       this.announceWinner = function(playerId) {
-        return console.log("Announcing Winner");
+        console.log("Announcing Winner");
+        return alert("Player " + playerId + " wins!");
       };
       this.addMiniGameToScheduler = function() {
         return console.log("Adding Mini-Game");
