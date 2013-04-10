@@ -3,14 +3,12 @@
 #Ramon Ortiz
 #Main script file where game drawing and logic is handled.
 
-#can=undefined
-#stylePaddingLeft = parseInt(document.defaultView.getComputedStyle(can, undefined)['paddingLeft'], 10) || 0
-#stylePaddingTop = parseInt(document.defaultView.getComputedStyle(can, undefined)['paddingTop'], 10) || 0
-#styleBorderLeft = parseInt(document.defaultView.getComputedStyle(can, undefined)['borderLeftWidth'], 10) || 0
-#styleBorderTop = parseInt(document.defaultView.getComputedStyle(can, undefined)['borderTopWidth'], 10) || 0
-#html = document.body.parentNode
-#htmlTop = html.offsetTop
-#htmlLeft = html.offsetLeft
+if typeof module != "undefined" && module.exports
+  #On a server
+  PaperRockScissors = require("paper_rock_scissors.coffee").PaperRockScissors
+else
+  #On a client
+  PaperRockScissors = window.PaperRockScissors
 
 getElementPositionFromEvent = (element, event) ->
     offsetX = 0
@@ -54,7 +52,7 @@ class tic_tac_foe
     #Params: element - DOM element Tic Tac Foe will be placed inside.
     @setupGame = (element) =>
       @setupCanvas element
-      @ticTacToe.initialize(@canvas, tic_tac_foe.CANVAS_HEIGHT, tic_tac_foe.CANVAS_WIDTH)
+      @ticTacToe.initialize(element, @canvas, tic_tac_foe.CANVAS_HEIGHT, tic_tac_foe.CANVAS_WIDTH)
     
     #Stores the primary tic tac toe game being played
     #Scheduler will always have at least tic tac toe present to play.
@@ -154,7 +152,11 @@ class CellDimension
 class TicTacToe extends Game
   #Constructor. Creates new instances of the class.
   constructor: (inits) ->
-            
+    
+    #Field stores the division that the game is being played from.
+    @gameDivision = null
+    
+    #Field keeps track of the current player playing.
     @currentPlayer = 1
     
     #Field represents the winner of the current game in progress.
@@ -237,15 +239,19 @@ class TicTacToe extends Game
     @GRID_LINE_THICKNESS=20
 
     #Method prepares the game for launch.
-    @initialize = (canvasArg, height, width) =>
+    @initialize = (element, canvasArg, height, width) =>
+      @gameDivision = element
       @canvas = canvasArg
       @CANVAS_HEIGHT = height
       @CANVAS_WIDTH = width
       @drawGrid(@canvas)
       @canvasElement = @canvas.canvas
-      @canvasElement.addEventListener('touchstart', @touchEventHandler, false);
-      @currentGameState = GameState.GAME_IN_PROGRESS
+      #@canvasElement.addEventListener('touchstart', @touchEventHandler, false);
+      #@currentGameState = GameState.GAME_IN_PROGRESS
       @gameWinner = 0
+      
+      paperRockScissors = new PaperRockScissors()
+      paperRockScissors.initialize(element)
       
     #Method draws X onto the tic tac toe grid at cellId location.
     #Params: canvas - Canvas the X will be drawn on.
