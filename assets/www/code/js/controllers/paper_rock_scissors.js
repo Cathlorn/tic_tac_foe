@@ -82,21 +82,21 @@
         newButton.setAttribute("value", "Rock");
         newButton.setAttribute("name", "RockButton");
         newButton.addEventListener('click', _this.onRock, false);
-        element.appendChild(newButton);
+        _this.gameDivision.appendChild(newButton);
         _this.rockButton = newButton;
         newButton = document.createElement("input");
         newButton.setAttribute("type", "button");
         newButton.setAttribute("value", "Paper");
         newButton.setAttribute("name", "PaperButton");
         newButton.addEventListener('click', _this.onPaper, false);
-        element.appendChild(newButton);
+        _this.gameDivision.appendChild(newButton);
         _this.paperButton = newButton;
         newButton = document.createElement("input");
         newButton.setAttribute("type", "button");
         newButton.setAttribute("value", "Scissors");
         newButton.setAttribute("name", "ScissorsButton");
         newButton.addEventListener('click', _this.onScissors, false);
-        element.appendChild(newButton);
+        _this.gameDivision.appendChild(newButton);
         _this.scissorsButton = newButton;
         _this.currentGameState = GameState.GAME_IN_PROGRESS;
         return _this.gameWinner = 0;
@@ -188,7 +188,7 @@
       this.resume = function(previousWinnerState, previousPlayerId) {
         console.log("Resuming game");
         if (_this.currentGameState === GameState.GAME_UNSTARTED) {
-          return initialize();
+          return _this.initialize();
         } else {
           _this.rockButton.style.display = _this.prevButtonVisibility;
           _this.paperButton.style.display = _this.prevButtonVisibility;

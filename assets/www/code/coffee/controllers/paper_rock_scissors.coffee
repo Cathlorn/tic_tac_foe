@@ -107,7 +107,7 @@ class PaperRockScissors
       newButton.setAttribute("value", "Rock")
       newButton.setAttribute("name", "RockButton")
       newButton.addEventListener('click', @onRock, false)
-      element.appendChild(newButton)
+      @gameDivision.appendChild(newButton)
       @rockButton = newButton
       
       #Add Paper
@@ -116,7 +116,7 @@ class PaperRockScissors
       newButton.setAttribute("value", "Paper")
       newButton.setAttribute("name", "PaperButton")
       newButton.addEventListener('click', @onPaper, false)
-      element.appendChild(newButton)
+      @gameDivision.appendChild(newButton)
       @paperButton = newButton
       
       #Add Scissors
@@ -125,7 +125,7 @@ class PaperRockScissors
       newButton.setAttribute("value", "Scissors")
       newButton.setAttribute("name", "ScissorsButton")
       newButton.addEventListener('click', @onScissors, false)
-      element.appendChild(newButton)
+      @gameDivision.appendChild(newButton)
       @scissorsButton = newButton
       @currentGameState = GameState.GAME_IN_PROGRESS
       @gameWinner = 0
@@ -230,7 +230,7 @@ class PaperRockScissors
     @resume = (previousWinnerState, previousPlayerId) =>
       console.log "Resuming game" 
       if(@currentGameState == GameState.GAME_UNSTARTED)
-        initialize()
+        @initialize()
       else
         @rockButton.style.display = @prevButtonVisibility
         @paperButton.style.display = @prevButtonVisibility
