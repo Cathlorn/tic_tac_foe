@@ -517,19 +517,54 @@ class TicTacToe extends Game
     #Remarks: Method can use the outcome of the previously launched game to
     #         influence how the game resumes.
     @resume = (previousWinnerState, previousPlayerId) =>
-      console.log "Resuming game"      
-      @canvasElement.style.display = @prevCanvasVisibility
-      @currentGameState = GameState.GAME_IN_PROGRESS
+      if(@currentGameState != GameState.GAME_TERMINATED)
+        console.log "Resuming game"
+        
+        #Mini Games must determine a winner if grid is full
+        if(@allCellsOccupied())
+          if(previousWinnerState == WinnerStatus.WINNER)
+            winnerFound = previousPlayerId
+            @gameWinner = previousPlayerId
+            @canvasElement.style.display = @prevCanvasVisibility
+            @terminate()
+            @announceWinner(previousPlayerId)
+          else if(previousWinnerState == WinnerStatus.LOSER)
+            #Another player needs to be chosen since current one lost.
+            @decideTurn()
+
+            #force another mini game to find winner
+            @addMiniGameToScheduler()
+            @suspend()
+          else
+            #force another mini game to find winner. Keep current player since result was undetermined
+            @addMiniGameToScheduler()
+            @suspend()
+        else
+        #Mini Games determine next moves of players in Tic Tac Toe Game
+          if(previousWinnerState == WinnerStatus.WINNER)
+            console.log "TODO: Add support for player to claim requested cell when winning mini-game."
+          else if(previousWinnerState == WinnerStatus.LOSER)
+            #Another player needs to be chosen since current one lost.
+            @decideTurn()
+          @canvasElement.style.display = @prevCanvasVisibility
+          @currentGameState = GameState.GAME_IN_PROGRESS
+        
+        
+      else
+        console.log "Error: Resuming a terminated game."
 
     #Method suspends game and prepares for another game to launch
     @suspend = () =>
-      console.log "Suspending game"
-      @prevCanvasVisibility = @canvasElement.style.display
-      @canvasElement.style.display = 'none'
-      @currentGameState = GameState.GAME_SUSPENDED
-      for idx in [0..(@registeredSuspendCallbacks.length - 1)]
-        callback = @registeredSuspendCallbacks[idx]
-        callback(@)
+      if(@currentGameState != GameState.GAME_TERMINATED)
+        console.log "Suspending game"
+        @prevCanvasVisibility = @canvasElement.style.display
+        @canvasElement.style.display = 'none'
+        @currentGameState = GameState.GAME_SUSPENDED
+        for idx in [0..(@registeredSuspendCallbacks.length - 1)]
+          callback = @registeredSuspendCallbacks[idx]
+          callback(@)
+      else
+        console.log "Error: Suspending a terminated game."
         
     #Method terminates game
     @terminate = () =>

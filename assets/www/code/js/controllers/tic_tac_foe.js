@@ -437,22 +437,53 @@
         return this.currentGameState;
       };
       this.resume = function(previousWinnerState, previousPlayerId) {
-        console.log("Resuming game");
-        _this.canvasElement.style.display = _this.prevCanvasVisibility;
-        return _this.currentGameState = GameState.GAME_IN_PROGRESS;
+        var winnerFound;
+        if (_this.currentGameState !== GameState.GAME_TERMINATED) {
+          console.log("Resuming game");
+          if (_this.allCellsOccupied()) {
+            if (previousWinnerState === WinnerStatus.WINNER) {
+              winnerFound = previousPlayerId;
+              _this.gameWinner = previousPlayerId;
+              _this.canvasElement.style.display = _this.prevCanvasVisibility;
+              _this.terminate();
+              return _this.announceWinner(previousPlayerId);
+            } else if (previousWinnerState === WinnerStatus.LOSER) {
+              _this.decideTurn();
+              _this.addMiniGameToScheduler();
+              return _this.suspend();
+            } else {
+              _this.addMiniGameToScheduler();
+              return _this.suspend();
+            }
+          } else {
+            if (previousWinnerState === WinnerStatus.WINNER) {
+              console.log("TODO: Add support for player to claim requested cell when winning mini-game.");
+            } else if (previousWinnerState === WinnerStatus.LOSER) {
+              _this.decideTurn();
+            }
+            _this.canvasElement.style.display = _this.prevCanvasVisibility;
+            return _this.currentGameState = GameState.GAME_IN_PROGRESS;
+          }
+        } else {
+          return console.log("Error: Resuming a terminated game.");
+        }
       };
       this.suspend = function() {
         var callback, idx, _i, _ref, _results;
-        console.log("Suspending game");
-        _this.prevCanvasVisibility = _this.canvasElement.style.display;
-        _this.canvasElement.style.display = 'none';
-        _this.currentGameState = GameState.GAME_SUSPENDED;
-        _results = [];
-        for (idx = _i = 0, _ref = _this.registeredSuspendCallbacks.length - 1; 0 <= _ref ? _i <= _ref : _i >= _ref; idx = 0 <= _ref ? ++_i : --_i) {
-          callback = _this.registeredSuspendCallbacks[idx];
-          _results.push(callback(_this));
+        if (_this.currentGameState !== GameState.GAME_TERMINATED) {
+          console.log("Suspending game");
+          _this.prevCanvasVisibility = _this.canvasElement.style.display;
+          _this.canvasElement.style.display = 'none';
+          _this.currentGameState = GameState.GAME_SUSPENDED;
+          _results = [];
+          for (idx = _i = 0, _ref = _this.registeredSuspendCallbacks.length - 1; 0 <= _ref ? _i <= _ref : _i >= _ref; idx = 0 <= _ref ? ++_i : --_i) {
+            callback = _this.registeredSuspendCallbacks[idx];
+            _results.push(callback(_this));
+          }
+          return _results;
+        } else {
+          return console.log("Error: Suspending a terminated game.");
         }
-        return _results;
       };
       this.terminate = function() {
         var callback, idx, _i, _ref, _results;
