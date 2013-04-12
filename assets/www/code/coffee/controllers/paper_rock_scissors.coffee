@@ -70,9 +70,8 @@ class PaperRockScissors
     #Method prepares the game for launch.
     @initialize = (element) =>
       @gameDivision = element
-      @previousGameDivisionState = element.innerHTML
       #Clear previous elements
-      element.innerHTML = ''
+      #element.innerHTML = ''
       
       #Add Rock
       newButton = document.createElement("input")

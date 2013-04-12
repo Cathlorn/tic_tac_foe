@@ -214,7 +214,10 @@
         _this.CANVAS_WIDTH = width;
         _this.drawGrid(_this.canvas);
         _this.canvasElement = _this.canvas.canvas;
+        _this.canvasElement.addEventListener('touchstart', _this.touchEventHandler, false);
+        _this.currentGameState = GameState.GAME_IN_PROGRESS;
         _this.gameWinner = 0;
+        _this.suspend();
         paperRockScissors = new PaperRockScissors();
         return paperRockScissors.initialize(element);
       };
@@ -378,7 +381,7 @@
           if (_this.allCellsOccupied()) {
             alert("Tie reached!");
             _this.addMiniGameToScheduler();
-            _this.currentGameState = GameState.GAME_SUSPENDED;
+            _this.suspend();
           }
         }
         return _this.gameWinner;
@@ -397,6 +400,17 @@
       this.getGameState = function() {
         console.log("Retrieving game state");
         return this.currentGameState;
+      };
+      this.resume = function(previousGameState, previousPlayerId) {
+        console.log("Resuming game");
+        _this.canvasElement.style.display = _this.prevCanvasVisibility;
+        return _this.currentGameState = GameState.GAME_IN_PROGRESS;
+      };
+      this.suspend = function() {
+        console.log("Suspending game");
+        _this.prevCanvasVisibility = _this.canvasElement.style.display;
+        _this.canvasElement.style.display = 'none';
+        return _this.currentGameState = GameState.GAME_SUSPENDED;
       };
     }
 

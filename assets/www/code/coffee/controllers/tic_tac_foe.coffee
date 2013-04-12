@@ -246,10 +246,10 @@ class TicTacToe extends Game
       @CANVAS_WIDTH = width
       @drawGrid(@canvas)
       @canvasElement = @canvas.canvas
-      #@canvasElement.addEventListener('touchstart', @touchEventHandler, false);
-      #@currentGameState = GameState.GAME_IN_PROGRESS
+      @canvasElement.addEventListener('touchstart', @touchEventHandler, false);
+      @currentGameState = GameState.GAME_IN_PROGRESS
       @gameWinner = 0
-      
+      @suspend()
       paperRockScissors = new PaperRockScissors()
       paperRockScissors.initialize(element)
       
@@ -439,7 +439,7 @@ class TicTacToe extends Game
         if(@allCellsOccupied())
           alert "Tie reached!"
           @addMiniGameToScheduler()
-          @currentGameState = GameState.GAME_SUSPENDED
+          @suspend()
       
       return @gameWinner
       
@@ -464,7 +464,32 @@ class TicTacToe extends Game
     @getGameState = () ->
       console.log "Retrieving game state"
       return @currentGameState
+      
+    #Method gets a game to resume playing from where it was when it was suspended.
+    #Params: previousGameState - returns the game state of the game that finished
+    #        before this game was resumed.
+    #        previousPlayerId - returns the Id of the last player to place the
+    #        previous game launched.
+    #Remarks: Method can use the outcome of the previously launched game to
+    #         influence how the game resumes.
+    @resume = (previousGameState, previousPlayerId) =>
+      console.log "Resuming game" 
+      #@gameDivision.innerHTML = @previousGameDivisionState
+      @canvasElement.style.display = @prevCanvasVisibility
+      #@canvasElement.addEventListener('touchstart', @touchEventHandler, false)
+      @currentGameState = GameState.GAME_IN_PROGRESS
+      #@gameDivision.appendChild @canvasElement
 
+    #Method suspends game and prepares for another game to launch
+    @suspend = () =>
+      console.log "Suspending game"
+      #@canvasElement.removeEventListener('touchstart', @touchEventHandler)
+      @prevCanvasVisibility = @canvasElement.style.display
+      @canvasElement.style.display = 'none'
+      #@previousGameDivisionState = @gameDivision.innerHTML
+      @currentGameState = GameState.GAME_SUSPENDED
+      #@gameDivision.removeChild @canvasElement
+      
 #Class controls which game is playing within TicTacFoe
 class GameScheduler
   constructor: (inits) ->

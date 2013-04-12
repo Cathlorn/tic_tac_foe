@@ -53,8 +53,6 @@
       this.initialize = function(element) {
         var newButton;
         _this.gameDivision = element;
-        _this.previousGameDivisionState = element.innerHTML;
-        element.innerHTML = '';
         newButton = document.createElement("input");
         newButton.setAttribute("type", "button");
         newButton.setAttribute("value", "Rock");
