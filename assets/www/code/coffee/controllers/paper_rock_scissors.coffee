@@ -3,6 +3,11 @@
 #Ramon Ortiz
 #Paper, Rock, Scissors MiniGame
 
+#Adding array method to remove elements cleanly from an array
+#Courtesy of Stack Overflow
+#http://stackoverflow.com/questions/4825812/clean-way-to-remove-element-from-javascript-array-with-jquery-coffeescript
+Array::remove = (e) -> @[t..t] = [] if (t = @indexOf(e)) > -1
+
 #Describes the current run status of the game
 GameState =
   GAME_UNSTARTED: 0
@@ -19,10 +24,10 @@ WinnerStatus =
 #Class runs the Paper Rock Scissors game 
 class PaperRockScissors
   #Constructor. Creates new instances of the class.
-  constructor: (inits) ->
+  constructor: (gameScheduler, gameDivision) ->
     
     #Field stores the division that the game is being played from.
-    @gameDivision = null
+    @gameDivision = gameDivision
     
     #Field stores organization of elements before the rock paper scissors came is called.
     @previousGameDivisionState = ""
@@ -42,6 +47,32 @@ class PaperRockScissors
     #Field represents the state the game is presently running under.
     @currentGameState = GameState.GAME_UNSTARTED
     
+    #Field keeps track of the functions registered to be calledback when suspending
+    @registeredSuspendCallbacks = new Array()
+    
+    #Field keeps track of the functions registered to be calledback when terminating
+    @registeredTerminationCallbacks = new Array()
+    
+    #Method registers an callback function for when a game suspends
+    @registerSuspendEvents = (callback) =>
+      console.log "Register callback for suspend events"
+      @registeredSuspendCallbacks.push callback
+    
+    #Method unregisters an callback function for when a game suspends
+    @unregisterSuspendEvents = (callback) =>
+      console.log "Unregister callback for suspend events"
+      @registeredSuspendCallbacks.remove callback
+    
+    #Method registers an callback function for when a game terminates
+    @registerTerminateEvents = (callback) =>
+      console.log "Register callback for terminate events"
+      @registeredTerminationCallbacks.push callback
+    
+    #Method unregisters an callback function for when a game terminates
+    @unregisterTerminateEvents = (callback) =>
+      console.log "Register callback for terminate events"
+      @registeredTerminationCallbacks.remove callback
+
     #Method returns the current player that is player
     @getCurrentPlayer = () => 
       return @currentPlayer
@@ -68,8 +99,7 @@ class PaperRockScissors
           @decideTurn()
 
     #Method prepares the game for launch.
-    @initialize = (element) =>
-      @gameDivision = element
+    @initialize = () =>
 
       #Add Rock
       newButton = document.createElement("input")
@@ -168,7 +198,7 @@ class PaperRockScissors
             winStatement = "Paper covers rock."
             alert(winStatement + " " + "Player 2 wins!")
             @gameWinner = 2
-          @currentGameState = GameState.GAME_TERMINATED
+          @terminate()
         else if(player1Choice == PAPER)
           if(player2Choice == ROCK)
             winStatement = "Paper covers rock."
@@ -178,7 +208,7 @@ class PaperRockScissors
             winStatement = "Scissors cut paper."
             alert(winStatement + " " + "Player 2 wins!")
             @gameWinner = 2
-          @currentGameState = GameState.GAME_TERMINATED
+          @terminate()
         else if(player1Choice == SCISSORS)
           if(player2Choice == PAPER)
             winStatement = "Scissors cut paper."
@@ -188,7 +218,7 @@ class PaperRockScissors
             winStatement = "Rock crushes scissors."
             alert(winStatement + " " + "Player 2 wins!")
             @gameWinner = 2
-          @currentGameState = GameState.GAME_TERMINATED
+          @terminate()
           
     #Method gets a game to resume playing from where it was when it was suspended.
     #Params: previousGameState - returns the game state of the game that finished
@@ -199,10 +229,13 @@ class PaperRockScissors
     #         influence how the game resumes.
     @resume = (previousWinnerState, previousPlayerId) =>
       console.log "Resuming game" 
-      @rockButton.style.display = @prevButtonVisibility
-      @paperButton.style.display = @prevButtonVisibility
-      @scissorsButton.style.display = @prevButtonVisibility
-      @currentGameState = GameState.GAME_IN_PROGRESS
+      if(@currentGameState == GameState.GAME_UNSTARTED)
+        initialize()
+      else
+        @rockButton.style.display = @prevButtonVisibility
+        @paperButton.style.display = @prevButtonVisibility
+        @scissorsButton.style.display = @prevButtonVisibility
+        @currentGameState = GameState.GAME_IN_PROGRESS
 
     #Method suspends game and prepares for another game to launch
     @suspend = () =>
@@ -212,6 +245,21 @@ class PaperRockScissors
       @paperButton.style.display = 'none'
       @scissorsButton.style.display = 'none'
       @currentGameState = GameState.GAME_SUSPENDED
+      for idx in [0..(@registeredSuspendCallbacks.length - 1)]
+        callback = @registeredSuspendCallbacks[idx]
+        callback(@)
+        
+    #Method terminates game
+    @terminate = () =>
+      console.log "Terminating game"
+      @prevButtonVisibility = @rockButton.style.display
+      @rockButton.style.display = 'none'
+      @paperButton.style.display = 'none'
+      @scissorsButton.style.display = 'none'
+      @currentGameState = GameState.GAME_TERMINATED
+      for idx in [0..(@registeredTerminationCallbacks.length - 1)]
+        callback = @registeredTerminationCallbacks[idx]
+        callback(@)
     
     #Method triggers when rock is selected.
     @onRock = () =>

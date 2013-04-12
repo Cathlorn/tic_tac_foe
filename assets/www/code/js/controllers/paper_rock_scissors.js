@@ -2,6 +2,13 @@
 (function() {
   var GameState, PAPER, PaperRockScissors, ROCK, SCISSORS, WinnerStatus;
 
+  Array.prototype.remove = function(e) {
+    var t, _ref;
+    if ((t = this.indexOf(e)) > -1) {
+      return ([].splice.apply(this, [t, t - t + 1].concat(_ref = [])), _ref);
+    }
+  };
+
   GameState = {
     GAME_UNSTARTED: 0,
     GAME_IN_PROGRESS: 1,
@@ -17,15 +24,33 @@
 
   PaperRockScissors = (function() {
 
-    function PaperRockScissors(inits) {
+    function PaperRockScissors(gameScheduler, gameDivision) {
       var _this = this;
-      this.gameDivision = null;
+      this.gameDivision = gameDivision;
       this.previousGameDivisionState = "";
       this.player1Choice = "";
       this.player2Choice = "";
       this.currentPlayer = 1;
       this.gameWinner = 0;
       this.currentGameState = GameState.GAME_UNSTARTED;
+      this.registeredSuspendCallbacks = new Array();
+      this.registeredTerminationCallbacks = new Array();
+      this.registerSuspendEvents = function(callback) {
+        console.log("Register callback for suspend events");
+        return _this.registeredSuspendCallbacks.push(callback);
+      };
+      this.unregisterSuspendEvents = function(callback) {
+        console.log("Unregister callback for suspend events");
+        return _this.registeredSuspendCallbacks.remove(callback);
+      };
+      this.registerTerminateEvents = function(callback) {
+        console.log("Register callback for terminate events");
+        return _this.registeredTerminationCallbacks.push(callback);
+      };
+      this.unregisterTerminateEvents = function(callback) {
+        console.log("Register callback for terminate events");
+        return _this.registeredTerminationCallbacks.remove(callback);
+      };
       this.getCurrentPlayer = function() {
         return _this.currentPlayer;
       };
@@ -50,9 +75,8 @@
           }
         }
       };
-      this.initialize = function(element) {
+      this.initialize = function() {
         var newButton;
-        _this.gameDivision = element;
         newButton = document.createElement("input");
         newButton.setAttribute("type", "button");
         newButton.setAttribute("value", "Rock");
@@ -135,7 +159,7 @@
               alert(winStatement + " " + "Player 2 wins!");
               _this.gameWinner = 2;
             }
-            return _this.currentGameState = GameState.GAME_TERMINATED;
+            return _this.terminate();
           } else if (player1Choice === PAPER) {
             if (player2Choice === ROCK) {
               winStatement = "Paper covers rock.";
@@ -146,7 +170,7 @@
               alert(winStatement + " " + "Player 2 wins!");
               _this.gameWinner = 2;
             }
-            return _this.currentGameState = GameState.GAME_TERMINATED;
+            return _this.terminate();
           } else if (player1Choice === SCISSORS) {
             if (player2Choice === PAPER) {
               winStatement = "Scissors cut paper.";
@@ -157,24 +181,50 @@
               alert(winStatement + " " + "Player 2 wins!");
               _this.gameWinner = 2;
             }
-            return _this.currentGameState = GameState.GAME_TERMINATED;
+            return _this.terminate();
           }
         }
       };
       this.resume = function(previousWinnerState, previousPlayerId) {
         console.log("Resuming game");
-        _this.rockButton.style.display = _this.prevButtonVisibility;
-        _this.paperButton.style.display = _this.prevButtonVisibility;
-        _this.scissorsButton.style.display = _this.prevButtonVisibility;
-        return _this.currentGameState = GameState.GAME_IN_PROGRESS;
+        if (_this.currentGameState === GameState.GAME_UNSTARTED) {
+          return initialize();
+        } else {
+          _this.rockButton.style.display = _this.prevButtonVisibility;
+          _this.paperButton.style.display = _this.prevButtonVisibility;
+          _this.scissorsButton.style.display = _this.prevButtonVisibility;
+          return _this.currentGameState = GameState.GAME_IN_PROGRESS;
+        }
       };
       this.suspend = function() {
+        var callback, idx, _i, _ref, _results;
         console.log("Suspending game");
         _this.prevButtonVisibility = _this.rockButton.style.display;
         _this.rockButton.style.display = 'none';
         _this.paperButton.style.display = 'none';
         _this.scissorsButton.style.display = 'none';
-        return _this.currentGameState = GameState.GAME_SUSPENDED;
+        _this.currentGameState = GameState.GAME_SUSPENDED;
+        _results = [];
+        for (idx = _i = 0, _ref = _this.registeredSuspendCallbacks.length - 1; 0 <= _ref ? _i <= _ref : _i >= _ref; idx = 0 <= _ref ? ++_i : --_i) {
+          callback = _this.registeredSuspendCallbacks[idx];
+          _results.push(callback(_this));
+        }
+        return _results;
+      };
+      this.terminate = function() {
+        var callback, idx, _i, _ref, _results;
+        console.log("Terminating game");
+        _this.prevButtonVisibility = _this.rockButton.style.display;
+        _this.rockButton.style.display = 'none';
+        _this.paperButton.style.display = 'none';
+        _this.scissorsButton.style.display = 'none';
+        _this.currentGameState = GameState.GAME_TERMINATED;
+        _results = [];
+        for (idx = _i = 0, _ref = _this.registeredTerminationCallbacks.length - 1; 0 <= _ref ? _i <= _ref : _i >= _ref; idx = 0 <= _ref ? ++_i : --_i) {
+          callback = _this.registeredTerminationCallbacks[idx];
+          _results.push(callback(_this));
+        }
+        return _results;
       };
       this.onRock = function() {
         return _this.updatePlayerChoice(_this.getCurrentPlayer(), ROCK);

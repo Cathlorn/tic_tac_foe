@@ -9,6 +9,11 @@ if typeof module != "undefined" && module.exports
 else
   #On a client
   PaperRockScissors = window.PaperRockScissors
+  
+#Adding array method to remove elements cleanly from an array
+#Courtesy of Stack Overflow
+#http://stackoverflow.com/questions/4825812/clean-way-to-remove-element-from-javascript-array-with-jquery-coffeescript
+Array::remove = (e) -> @[t..t] = [] if (t = @indexOf(e)) > -1
 
 getElementPositionFromEvent = (element, event) ->
     offsetX = 0
@@ -41,6 +46,7 @@ getElementPositionFromEvent = (element, event) ->
 class tic_tac_foe
   #Constructor. Creates new instances of the class.
   constructor: (inits) ->
+    
     #Initializes the canvas for drawing
     @setupCanvas = (element) =>
       console.log "Setting Up Canvas"
@@ -54,13 +60,15 @@ class tic_tac_foe
       @setupCanvas element
       @ticTacToe.initialize(element, @canvas, tic_tac_foe.CANVAS_HEIGHT, tic_tac_foe.CANVAS_WIDTH)
     
-    #Stores the primary tic tac toe game being played
-    #Scheduler will always have at least tic tac toe present to play.
-    @ticTacToe = new TicTacToe()
-
     #Figures out which game is next to play (probably round robin)
     #Each game decides when to terminate or yield. A status of the game is reported each time it exits
     @gameScheduler = new GameScheduler()
+    
+    #Stores the primary tic tac toe game being played
+    #Scheduler will always have at least tic tac toe present to play.
+    @ticTacToe = new TicTacToe(@gameScheduler)
+    
+    @gameScheduler.addGame(@ticTacToe)
     
   @CANVAS_HEIGHT=500
   @CANVAS_WIDTH=500
@@ -150,7 +158,10 @@ class CellDimension
 #It also schedules minigames to be played
 class TicTacToe extends Game
   #Constructor. Creates new instances of the class.
-  constructor: (inits) ->
+  constructor: (gameScheduler) ->
+    
+    #Field stores reference to game scheduler
+    @gameScheduler = gameScheduler
     
     #Field stores the division that the game is being played from.
     @gameDivision = null
@@ -164,6 +175,32 @@ class TicTacToe extends Game
     #Field represents the state the game is presently running under.
     @currentGameState = GameState.GAME_UNSTARTED
     
+    #Field keeps track of the functions registered to be calledback when suspending
+    @registeredSuspendCallbacks = new Array()
+    
+    #Field keeps track of the functions registered to be calledback when terminating
+    @registeredTerminationCallbacks = new Array()
+    
+    #Method registers an callback function for when a game suspends
+    @registerSuspendEvents = (callback) =>
+      console.log "Register callback for suspend events"
+      @registeredSuspendCallbacks.push callback
+    
+    #Method unregisters an callback function for when a game suspends
+    @unregisterSuspendEvents = (callback) =>
+      console.log "Unregister callback for suspend events"
+      @registeredSuspendCallbacks.remove callback
+    
+    #Method registers an callback function for when a game terminates
+    @registerTerminateEvents = (callback) =>
+      console.log "Register callback for terminate events"
+      @registeredTerminationCallbacks.push callback
+    
+    #Method unregisters an callback function for when a game terminates
+    @unregisterTerminateEvents = (callback) =>
+      console.log "Register callback for terminate events"
+      @registeredTerminationCallbacks.remove callback
+
     #Method reports the outcome of the game
     @getGameResult = () =>
       console.log "Retrieving game result"
@@ -258,9 +295,6 @@ class TicTacToe extends Game
       @canvasElement.addEventListener('touchstart', @touchEventHandler, false);
       @currentGameState = GameState.GAME_IN_PROGRESS
       @gameWinner = 0
-      @suspend()
-      paperRockScissors = new PaperRockScissors()
-      paperRockScissors.initialize(element)
       
     #Method draws X onto the tic tac toe grid at cellId location.
     #Params: canvas - Canvas the X will be drawn on.
@@ -441,8 +475,8 @@ class TicTacToe extends Game
         matchFound = @checkColumn(cellId%3) || @checkDiagonals() || @checkRow(Math.floor cellId/3)
         if(matchFound)
           winnerFound = playerId
-          @currentGameState = GameState.GAME_TERMINATED
           @gameWinner = playerId
+          @terminate()
         
         if(@allCellsOccupied())
           alert "Tie reached!"
@@ -467,6 +501,8 @@ class TicTacToe extends Game
     #Method chooses the mini-game that will play this game yields. 
     @addMiniGameToScheduler = () ->
       console.log "Adding Mini-Game"
+      paperRockScissors = new PaperRockScissors(@gameScheduler, @gameDivision)
+      @gameScheduler.addGame(paperRockScissors)
       
     #Method reports the current state of the game
     @getGameState = () ->
@@ -481,7 +517,7 @@ class TicTacToe extends Game
     #Remarks: Method can use the outcome of the previously launched game to
     #         influence how the game resumes.
     @resume = (previousWinnerState, previousPlayerId) =>
-      console.log "Resuming game" 
+      console.log "Resuming game"      
       @canvasElement.style.display = @prevCanvasVisibility
       @currentGameState = GameState.GAME_IN_PROGRESS
 
@@ -491,6 +527,17 @@ class TicTacToe extends Game
       @prevCanvasVisibility = @canvasElement.style.display
       @canvasElement.style.display = 'none'
       @currentGameState = GameState.GAME_SUSPENDED
+      for idx in [0..(@registeredSuspendCallbacks.length - 1)]
+        callback = @registeredSuspendCallbacks[idx]
+        callback(@)
+        
+    #Method terminates game
+    @terminate = () =>
+      console.log "Terminating game"
+      @currentGameState = GameState.GAME_TERMINATED
+      for idx in [0..(@registeredTerminationCallbacks.length - 1)]
+        callback = @registeredTerminationCallbacks[idx]
+        callback(@)
       
 #Class controls which game is playing within TicTacFoe
 class GameScheduler
@@ -505,6 +552,8 @@ class GameScheduler
     #Params: game - Reference to game that is being added to run
     @addGame = (game) =>
       console.log "Adding Game"
+      game.registerSuspendEvents(@suspendEventHandler)
+      game.registerTerminateEvents(@terminateEventHandler)
       @gameStack.push game
     
     #Method triggers when a running game suspends control
@@ -524,7 +573,7 @@ class GameScheduler
       console.log "Determining the next running game"
       @currentRunningGame = @gameStack.pop()
       if(@currentRunningGame != null)
-        @currentRunningGame.resume()
+        @currentRunningGame.resume(@currentRunningGame.getGameResult(), @currentRunningGame.getCurrentPlayer())
 
 if typeof module != "undefined" && module.exports
   #On a server

@@ -10,6 +10,13 @@
     PaperRockScissors = window.PaperRockScissors;
   }
 
+  Array.prototype.remove = function(e) {
+    var t, _ref;
+    if ((t = this.indexOf(e)) > -1) {
+      return ([].splice.apply(this, [t, t - t + 1].concat(_ref = [])), _ref);
+    }
+  };
+
   getElementPositionFromEvent = function(element, event) {
     var mx, my, offsetX, offsetY;
     offsetX = 0;
@@ -44,8 +51,9 @@
         _this.setupCanvas(element);
         return _this.ticTacToe.initialize(element, _this.canvas, tic_tac_foe.CANVAS_HEIGHT, tic_tac_foe.CANVAS_WIDTH);
       };
-      this.ticTacToe = new TicTacToe();
       this.gameScheduler = new GameScheduler();
+      this.ticTacToe = new TicTacToe(this.gameScheduler);
+      this.gameScheduler.addGame(this.ticTacToe);
     }
 
     tic_tac_foe.CANVAS_HEIGHT = 500;
@@ -130,12 +138,31 @@
 
     __extends(TicTacToe, _super);
 
-    function TicTacToe(inits) {
+    function TicTacToe(gameScheduler) {
       var _this = this;
+      this.gameScheduler = gameScheduler;
       this.gameDivision = null;
       this.currentPlayer = 1;
       this.gameWinner = 0;
       this.currentGameState = GameState.GAME_UNSTARTED;
+      this.registeredSuspendCallbacks = new Array();
+      this.registeredTerminationCallbacks = new Array();
+      this.registerSuspendEvents = function(callback) {
+        console.log("Register callback for suspend events");
+        return _this.registeredSuspendCallbacks.push(callback);
+      };
+      this.unregisterSuspendEvents = function(callback) {
+        console.log("Unregister callback for suspend events");
+        return _this.registeredSuspendCallbacks.remove(callback);
+      };
+      this.registerTerminateEvents = function(callback) {
+        console.log("Register callback for terminate events");
+        return _this.registeredTerminationCallbacks.push(callback);
+      };
+      this.unregisterTerminateEvents = function(callback) {
+        console.log("Register callback for terminate events");
+        return _this.registeredTerminationCallbacks.remove(callback);
+      };
       this.getGameResult = function() {
         var winnerStatus;
         console.log("Retrieving game result");
@@ -216,7 +243,6 @@
       };
       this.GRID_LINE_THICKNESS = 20;
       this.initialize = function(element, canvasArg, height, width) {
-        var paperRockScissors;
         _this.gameDivision = element;
         _this.canvas = canvasArg;
         _this.CANVAS_HEIGHT = height;
@@ -225,10 +251,7 @@
         _this.canvasElement = _this.canvas.canvas;
         _this.canvasElement.addEventListener('touchstart', _this.touchEventHandler, false);
         _this.currentGameState = GameState.GAME_IN_PROGRESS;
-        _this.gameWinner = 0;
-        _this.suspend();
-        paperRockScissors = new PaperRockScissors();
-        return paperRockScissors.initialize(element);
+        return _this.gameWinner = 0;
       };
       this.drawX = function(canvas, cellId) {
         var heightIncrement, heightOffset, player, rect, widthIncrement, widthOffset, xLegLength, xPos, xStart, yPos, yStart;
@@ -384,8 +407,8 @@
           matchFound = _this.checkColumn(cellId % 3) || _this.checkDiagonals() || _this.checkRow(Math.floor(cellId / 3));
           if (matchFound) {
             winnerFound = playerId;
-            _this.currentGameState = GameState.GAME_TERMINATED;
             _this.gameWinner = playerId;
+            _this.terminate();
           }
           if (_this.allCellsOccupied()) {
             alert("Tie reached!");
@@ -404,7 +427,10 @@
         return alert("Player " + playerId + " wins!");
       };
       this.addMiniGameToScheduler = function() {
-        return console.log("Adding Mini-Game");
+        var paperRockScissors;
+        console.log("Adding Mini-Game");
+        paperRockScissors = new PaperRockScissors(this.gameScheduler, this.gameDivision);
+        return this.gameScheduler.addGame(paperRockScissors);
       };
       this.getGameState = function() {
         console.log("Retrieving game state");
@@ -416,10 +442,28 @@
         return _this.currentGameState = GameState.GAME_IN_PROGRESS;
       };
       this.suspend = function() {
+        var callback, idx, _i, _ref, _results;
         console.log("Suspending game");
         _this.prevCanvasVisibility = _this.canvasElement.style.display;
         _this.canvasElement.style.display = 'none';
-        return _this.currentGameState = GameState.GAME_SUSPENDED;
+        _this.currentGameState = GameState.GAME_SUSPENDED;
+        _results = [];
+        for (idx = _i = 0, _ref = _this.registeredSuspendCallbacks.length - 1; 0 <= _ref ? _i <= _ref : _i >= _ref; idx = 0 <= _ref ? ++_i : --_i) {
+          callback = _this.registeredSuspendCallbacks[idx];
+          _results.push(callback(_this));
+        }
+        return _results;
+      };
+      this.terminate = function() {
+        var callback, idx, _i, _ref, _results;
+        console.log("Terminating game");
+        _this.currentGameState = GameState.GAME_TERMINATED;
+        _results = [];
+        for (idx = _i = 0, _ref = _this.registeredTerminationCallbacks.length - 1; 0 <= _ref ? _i <= _ref : _i >= _ref; idx = 0 <= _ref ? ++_i : --_i) {
+          callback = _this.registeredTerminationCallbacks[idx];
+          _results.push(callback(_this));
+        }
+        return _results;
       };
     }
 
@@ -435,6 +479,8 @@
       this.currentRunningGame = null;
       this.addGame = function(game) {
         console.log("Adding Game");
+        game.registerSuspendEvents(_this.suspendEventHandler);
+        game.registerTerminateEvents(_this.terminateEventHandler);
         return _this.gameStack.push(game);
       };
       this.suspendEventHandler = function(game) {
@@ -449,7 +495,7 @@
         console.log("Determining the next running game");
         _this.currentRunningGame = _this.gameStack.pop();
         if (_this.currentRunningGame !== null) {
-          return _this.currentRunningGame.resume();
+          return _this.currentRunningGame.resume(_this.currentRunningGame.getGameResult(), _this.currentRunningGame.getCurrentPlayer());
         }
       };
     }
