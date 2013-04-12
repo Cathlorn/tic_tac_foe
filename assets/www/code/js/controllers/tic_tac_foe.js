@@ -83,7 +83,7 @@
       this.getCurrentPlayer = function() {
         return console.log("Retrieving current player");
       };
-      this.resume = function(previousGameState, previousPlayerId) {
+      this.resume = function(previousWinnerState, previousPlayerId) {
         return console.log("Resuming game");
       };
       this.initialize = function(canvasArg, height, width) {
@@ -136,6 +136,15 @@
       this.currentPlayer = 1;
       this.gameWinner = 0;
       this.currentGameState = GameState.GAME_UNSTARTED;
+      this.getGameResult = function() {
+        var winnerStatus;
+        console.log("Retrieving game result");
+        winnerStatus = WinnerStatus.UNDETERMINED;
+        if (_this.currentGameState === GameState.GAME_TERMINATED) {
+          winnerStatus = WinnerStatus.WINNER;
+        }
+        return winnerStatus;
+      };
       this.getCurrentPlayer = function() {
         return _this.currentPlayer;
       };
@@ -401,7 +410,7 @@
         console.log("Retrieving game state");
         return this.currentGameState;
       };
-      this.resume = function(previousGameState, previousPlayerId) {
+      this.resume = function(previousWinnerState, previousPlayerId) {
         console.log("Resuming game");
         _this.canvasElement.style.display = _this.prevCanvasVisibility;
         return _this.currentGameState = GameState.GAME_IN_PROGRESS;
@@ -421,20 +430,27 @@
   GameScheduler = (function() {
 
     function GameScheduler(inits) {
+      var _this = this;
+      this.gameStack = new Array();
+      this.currentRunningGame = null;
       this.addGame = function(game) {
-        return console.log("Adding Game");
-      };
-      this.removeGame = function(game) {
-        return console.log("Removing Game");
+        console.log("Adding Game");
+        return _this.gameStack.push(game);
       };
       this.suspendEventHandler = function(game) {
-        return console.log("Handling suspend event");
+        console.log("Handling suspend event");
+        return _this.determineNextRunningGame();
       };
       this.terminateEventHandler = function(game) {
-        return console.log("Handling terminate event");
+        console.log("Handling terminate event");
+        return _this.determineNextRunningGame();
       };
       this.determineNextRunningGame = function() {
-        return console.log("Determining the next running game");
+        console.log("Determining the next running game");
+        _this.currentRunningGame = _this.gameStack.pop();
+        if (_this.currentRunningGame !== null) {
+          return _this.currentRunningGame.resume();
+        }
       };
     }
 

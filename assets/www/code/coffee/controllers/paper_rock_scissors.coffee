@@ -70,9 +70,7 @@ class PaperRockScissors
     #Method prepares the game for launch.
     @initialize = (element) =>
       @gameDivision = element
-      #Clear previous elements
-      #element.innerHTML = ''
-      
+
       #Add Rock
       newButton = document.createElement("input")
       newButton.setAttribute("type", "button")
@@ -80,6 +78,7 @@ class PaperRockScissors
       newButton.setAttribute("name", "RockButton")
       newButton.addEventListener('click', @onRock, false)
       element.appendChild(newButton)
+      @rockButton = newButton
       
       #Add Paper
       newButton = document.createElement("input")
@@ -88,6 +87,7 @@ class PaperRockScissors
       newButton.setAttribute("name", "PaperButton")
       newButton.addEventListener('click', @onPaper, false)
       element.appendChild(newButton)
+      @paperButton = newButton
       
       #Add Scissors
       newButton = document.createElement("input")
@@ -96,6 +96,7 @@ class PaperRockScissors
       newButton.setAttribute("name", "ScissorsButton")
       newButton.addEventListener('click', @onScissors, false)
       element.appendChild(newButton)
+      @scissorsButton = newButton
       @currentGameState = GameState.GAME_IN_PROGRESS
       @gameWinner = 0
        
@@ -123,6 +124,16 @@ class PaperRockScissors
     @announceWinner = (playerId) ->
       console.log "Announcing Winner"
       alert "Player " + playerId + " wins!"
+      
+    #Method reports the outcome of the game
+    @getGameResult = () =>
+      console.log "Retrieving game result"
+      winnerStatus = WinnerStatus.UNDETERMINED
+      
+      if(@currentGameState == GameState.GAME_TERMINATED)
+        winnerStatus = WinnerStatus.WINNER
+        
+      return winnerStatus
       
     #Method chooses the mini-game that will play this game yields. 
     @addMiniGameToScheduler = () ->
@@ -178,6 +189,29 @@ class PaperRockScissors
             alert(winStatement + " " + "Player 2 wins!")
             @gameWinner = 2
           @currentGameState = GameState.GAME_TERMINATED
+          
+    #Method gets a game to resume playing from where it was when it was suspended.
+    #Params: previousGameState - returns the game state of the game that finished
+    #        before this game was resumed.
+    #        previousPlayerId - returns the Id of the last player to place the
+    #        previous game launched.
+    #Remarks: Method can use the outcome of the previously launched game to
+    #         influence how the game resumes.
+    @resume = (previousWinnerState, previousPlayerId) =>
+      console.log "Resuming game" 
+      @rockButton.style.display = @prevButtonVisibility
+      @paperButton.style.display = @prevButtonVisibility
+      @scissorsButton.style.display = @prevButtonVisibility
+      @currentGameState = GameState.GAME_IN_PROGRESS
+
+    #Method suspends game and prepares for another game to launch
+    @suspend = () =>
+      console.log "Suspending game"
+      @prevButtonVisibility = @rockButton.style.display
+      @rockButton.style.display = 'none'
+      @paperButton.style.display = 'none'
+      @scissorsButton.style.display = 'none'
+      @currentGameState = GameState.GAME_SUSPENDED
     
     #Method triggers when rock is selected.
     @onRock = () =>

@@ -59,18 +59,21 @@
         newButton.setAttribute("name", "RockButton");
         newButton.addEventListener('click', _this.onRock, false);
         element.appendChild(newButton);
+        _this.rockButton = newButton;
         newButton = document.createElement("input");
         newButton.setAttribute("type", "button");
         newButton.setAttribute("value", "Paper");
         newButton.setAttribute("name", "PaperButton");
         newButton.addEventListener('click', _this.onPaper, false);
         element.appendChild(newButton);
+        _this.paperButton = newButton;
         newButton = document.createElement("input");
         newButton.setAttribute("type", "button");
         newButton.setAttribute("value", "Scissors");
         newButton.setAttribute("name", "ScissorsButton");
         newButton.addEventListener('click', _this.onScissors, false);
         element.appendChild(newButton);
+        _this.scissorsButton = newButton;
         _this.currentGameState = GameState.GAME_IN_PROGRESS;
         return _this.gameWinner = 0;
       };
@@ -90,6 +93,15 @@
       this.announceWinner = function(playerId) {
         console.log("Announcing Winner");
         return alert("Player " + playerId + " wins!");
+      };
+      this.getGameResult = function() {
+        var winnerStatus;
+        console.log("Retrieving game result");
+        winnerStatus = WinnerStatus.UNDETERMINED;
+        if (_this.currentGameState === GameState.GAME_TERMINATED) {
+          winnerStatus = WinnerStatus.WINNER;
+        }
+        return winnerStatus;
       };
       this.addMiniGameToScheduler = function() {
         return console.log("Adding Mini-Game");
@@ -148,6 +160,21 @@
             return _this.currentGameState = GameState.GAME_TERMINATED;
           }
         }
+      };
+      this.resume = function(previousWinnerState, previousPlayerId) {
+        console.log("Resuming game");
+        _this.rockButton.style.display = _this.prevButtonVisibility;
+        _this.paperButton.style.display = _this.prevButtonVisibility;
+        _this.scissorsButton.style.display = _this.prevButtonVisibility;
+        return _this.currentGameState = GameState.GAME_IN_PROGRESS;
+      };
+      this.suspend = function() {
+        console.log("Suspending game");
+        _this.prevButtonVisibility = _this.rockButton.style.display;
+        _this.rockButton.style.display = 'none';
+        _this.paperButton.style.display = 'none';
+        _this.scissorsButton.style.display = 'none';
+        return _this.currentGameState = GameState.GAME_SUSPENDED;
       };
       this.onRock = function() {
         return _this.updatePlayerChoice(_this.getCurrentPlayer(), ROCK);

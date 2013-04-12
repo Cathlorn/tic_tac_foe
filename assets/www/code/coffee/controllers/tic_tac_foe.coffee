@@ -78,7 +78,6 @@ WinnerStatus =
   WINNER: 1
   LOSER: 2
 
-
 #Class handles functionality common to all games and mini-games
 class Game
   #Constructor. Creates new instances of the class.
@@ -107,7 +106,7 @@ class Game
     #        previous game launched.
     #Remarks: Method can use the outcome of the previously launched game to
     #         influence how the game resumes.
-    @resume = (previousGameState, previousPlayerId) ->
+    @resume = (previousWinnerState, previousPlayerId) ->
       console.log "Resuming game"
       
     #Method prepares the game for launch.
@@ -164,6 +163,16 @@ class TicTacToe extends Game
     
     #Field represents the state the game is presently running under.
     @currentGameState = GameState.GAME_UNSTARTED
+    
+    #Method reports the outcome of the game
+    @getGameResult = () =>
+      console.log "Retrieving game result"
+      winnerStatus = WinnerStatus.UNDETERMINED
+      
+      if(@currentGameState == GameState.GAME_TERMINATED)
+        winnerStatus = WinnerStatus.WINNER
+        
+      return winnerStatus
     
     #Method returns the current player that is player
     @getCurrentPlayer = () => 
@@ -386,7 +395,6 @@ class TicTacToe extends Game
         
       return match
       
-      
     #Method determines if there is a winner along the two diagonal
     #possibilities.
     @checkDiagonals = () =>
@@ -472,50 +480,51 @@ class TicTacToe extends Game
     #        previous game launched.
     #Remarks: Method can use the outcome of the previously launched game to
     #         influence how the game resumes.
-    @resume = (previousGameState, previousPlayerId) =>
+    @resume = (previousWinnerState, previousPlayerId) =>
       console.log "Resuming game" 
-      #@gameDivision.innerHTML = @previousGameDivisionState
       @canvasElement.style.display = @prevCanvasVisibility
-      #@canvasElement.addEventListener('touchstart', @touchEventHandler, false)
       @currentGameState = GameState.GAME_IN_PROGRESS
-      #@gameDivision.appendChild @canvasElement
 
     #Method suspends game and prepares for another game to launch
     @suspend = () =>
       console.log "Suspending game"
-      #@canvasElement.removeEventListener('touchstart', @touchEventHandler)
       @prevCanvasVisibility = @canvasElement.style.display
       @canvasElement.style.display = 'none'
-      #@previousGameDivisionState = @gameDivision.innerHTML
       @currentGameState = GameState.GAME_SUSPENDED
-      #@gameDivision.removeChild @canvasElement
       
 #Class controls which game is playing within TicTacFoe
 class GameScheduler
   constructor: (inits) ->
+    #Field stores the game stack
+    @gameStack = new Array() 
+    
+    #Field references current game running in scheduler
+    @currentRunningGame = null
+    
     #Method adds a game for scheduling
     #Params: game - Reference to game that is being added to run
-    @addGame = (game) ->
+    @addGame = (game) =>
       console.log "Adding Game"
-      
-    #Method removes a game from scheduling
-    #Params: game - Reference to game that is being removed from running
-    @removeGame = (game) ->
-      console.log "Removing Game"
+      @gameStack.push game
     
     #Method triggers when a running game suspends control
     #Params: game - Reference to game that suspended
-    @suspendEventHandler = (game) ->
+    @suspendEventHandler = (game) =>
       console.log "Handling suspend event"
+      @determineNextRunningGame()
       
     #Method triggers when a running game terminates
     #Params: game - Reference to game that terminated
-    @terminateEventHandler = (game) ->
+    @terminateEventHandler = (game) =>
       console.log "Handling terminate event"
+      @determineNextRunningGame()
       
     #Method determines the next running game
-    @determineNextRunningGame = () ->
+    @determineNextRunningGame = () =>
       console.log "Determining the next running game"
+      @currentRunningGame = @gameStack.pop()
+      if(@currentRunningGame != null)
+        @currentRunningGame.resume()
 
 if typeof module != "undefined" && module.exports
   #On a server
