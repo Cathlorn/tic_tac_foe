@@ -601,14 +601,22 @@ class GameScheduler
     #Params: game - Reference to game that terminated
     @terminateEventHandler = (game) =>
       console.log "Handling terminate event"
+      #Remove the current game from the stack
+      @gameStack.pop()
       @determineNextRunningGame()
       
     #Method determines the next running game
     @determineNextRunningGame = () =>
       console.log "Determining the next running game"
-      @currentRunningGame = @gameStack.pop()
-      if(@currentRunningGame != null)
-        @currentRunningGame.resume(@currentRunningGame.getGameResult(), @currentRunningGame.getCurrentPlayer())
+      
+      if(@gameStack.length > 0)
+        previousRunningGame = @currentRunningGame
+        #Peek to see what is currently at top of stack
+        @currentRunningGame = @gameStack[(@gameStack.length - 1)]
+        if(previousRunningGame == null)
+          @currentRunningGame.resume(@currentRunningGame.getGameResult(), @currentRunningGame.getCurrentPlayer())
+        else
+          @currentRunningGame.resume(previousRunningGame.getGameResult(), previousRunningGame.getCurrentPlayer())
 
 if typeof module != "undefined" && module.exports
   #On a server

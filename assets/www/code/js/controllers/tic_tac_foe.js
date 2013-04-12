@@ -520,13 +520,20 @@
       };
       this.terminateEventHandler = function(game) {
         console.log("Handling terminate event");
+        _this.gameStack.pop();
         return _this.determineNextRunningGame();
       };
       this.determineNextRunningGame = function() {
+        var previousRunningGame;
         console.log("Determining the next running game");
-        _this.currentRunningGame = _this.gameStack.pop();
-        if (_this.currentRunningGame !== null) {
-          return _this.currentRunningGame.resume(_this.currentRunningGame.getGameResult(), _this.currentRunningGame.getCurrentPlayer());
+        if (_this.gameStack.length > 0) {
+          previousRunningGame = _this.currentRunningGame;
+          _this.currentRunningGame = _this.gameStack[_this.gameStack.length - 1];
+          if (previousRunningGame === null) {
+            return _this.currentRunningGame.resume(_this.currentRunningGame.getGameResult(), _this.currentRunningGame.getCurrentPlayer());
+          } else {
+            return _this.currentRunningGame.resume(previousRunningGame.getGameResult(), previousRunningGame.getCurrentPlayer());
+          }
         }
       };
     }
