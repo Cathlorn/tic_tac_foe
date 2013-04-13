@@ -23,7 +23,7 @@
 
       this.Tap_Home = __bind(this.Tap_Home, this);
 
-      var gameDivHeight, gameDivWidth, windowHeight, windowWidth,
+      var gameDivHeight, gameDivWidth, oImageLeft, oImageTop, offset, testDivOffsetX, testDivOffsetY, windowHeight, windowWidth, xImageLeft, xImageTop, xoHeight, xoWidth,
         _this = this;
       this.template_name = ko.observable(Templates.HOME);
       this.display_page = function() {
@@ -31,6 +31,23 @@
       };
       this.game = new tic_tac_foe();
       this.title = ko.observable("Tic Tac Foe");
+      this.computeTotalOffset = function(element) {
+        var offset, offsetX, offsetY;
+        offsetX = 0;
+        offsetY = 0;
+        if (element.offsetParent !== void 0) {
+          offsetX += element.offsetLeft;
+          offsetY += element.offsetTop;
+          while ((element = element.offsetParent)) {
+            offsetX += element.offsetLeft;
+            offsetY += element.offsetTop;
+          }
+        }
+        offset = {};
+        offset.offsetX = offsetX;
+        offset.offsetY = offsetY;
+        return offset;
+      };
       windowWidth = $(window).width();
       windowHeight = $(window).height();
       this.gameWorkArea = document.getElementById('gameWorkArea');
@@ -41,6 +58,39 @@
       $("#testDivision").css("width", gameDivWidth);
       $("#testDivision").css("top", 0.415 * gameDivHeight);
       $("#testDivision").css("left", 0.33 * gameDivWidth);
+      xoHeight = Math.floor(windowHeight * 0.10);
+      xoWidth = Math.floor(windowWidth * 0.10);
+      if (xoWidth > xoHeight) {
+        xoHeight = xoWidth;
+      } else {
+        xoWidth = xoHeight;
+      }
+      offset = this.computeTotalOffset(this.testDivision);
+      testDivOffsetX = offset.offsetX;
+      testDivOffsetY = offset.offsetY;
+      xImageTop = Math.floor(0.60 * windowHeight);
+      xImageLeft = Math.floor(0.05 * windowWidth);
+      $("#xImage").css("height", xoHeight);
+      $("#xImage").css("width", xoWidth);
+      $("#xImage").css("top", xImageTop);
+      $("#xImage").css("left", xImageLeft);
+      $("#xImageGlow").css("height", xoHeight);
+      $("#xImageGlow").css("width", xoWidth);
+      $("#xImageGlow").css("top", xImageTop);
+      $("#xImageGlow").css("left", xImageLeft);
+      oImageTop = Math.floor(0.60 * windowHeight);
+      oImageLeft = Math.floor(0.85 * windowWidth);
+      $("#oImage").css("height", xoHeight);
+      $("#oImage").css("width", xoWidth);
+      $("#oImage").css("top", oImageTop);
+      $("#oImage").css("left", oImageLeft);
+      $("#oImageGlow").css("height", xoHeight);
+      $("#oImageGlow").css("width", xoWidth);
+      $("#oImageGlow").css("top", oImageTop);
+      $("#oImageGlow").css("left", oImageLeft);
+      this.playerStatusLabel = document.getElementById('playerStatusLabel');
+      $("#playerStatusLabel").css("top", 0);
+      $("#playerStatusLabel").css("left", windowWidth / 2 - this.playerStatusLabel.offsetWidth / 2);
       this.game.setupGame(this.testDivision);
     }
 

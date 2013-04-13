@@ -83,7 +83,6 @@
         console.log("Setting Up Canvas");
         canvasHeight = element.offsetHeight;
         canvasWidth = element.offsetWidth;
-        $("#oImage").css("display", "none");
         _this.canvasElement = E.canvas(canvasWidth, canvasHeight);
         _this.canvas = new Canvas(_this.canvasElement);
         return element.appendChild(_this.canvasElement);

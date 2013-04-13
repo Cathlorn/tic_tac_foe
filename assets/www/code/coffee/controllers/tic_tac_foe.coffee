@@ -88,7 +88,6 @@ class tic_tac_foe
       #@canvasElement = document.getElementById('gameCanvas')
       canvasHeight = element.offsetHeight
       canvasWidth = element.offsetWidth
-      $("#oImage").css("display", "none");
       @canvasElement = E.canvas canvasWidth, canvasHeight
       @canvas = new Canvas @canvasElement
       element.appendChild @canvasElement
