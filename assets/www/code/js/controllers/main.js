@@ -29,7 +29,13 @@
         return _this.template_name();
       };
       this.game = new tic_tac_foe();
-      this.title = ko.observable("Home");
+      this.title = ko.observable("Tic Tac Foe");
+      this.centerImages = function() {
+        if (_this.testDivision !== null && _this.testDivision !== void 0) {
+          _this.testDivision.style.top = 500;
+          return _this.testDivision.style.left = 600;
+        }
+      };
     }
 
     Main_Controller_VM.prototype.Tap_Home = function(d, e) {
@@ -47,8 +53,12 @@
         console.log(element.id);
         if (element.id === 'testDivision') {
           this.game.setupGame(element);
+          this.testDivision = element;
+        } else if (element.id === 'dojoPic') {
+          this.dojoPic = element;
         }
       }
+      this.centerImages();
       $(d).trigger("create");
     };
 

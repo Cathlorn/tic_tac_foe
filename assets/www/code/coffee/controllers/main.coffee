@@ -15,7 +15,11 @@ class Main_Controller_VM
     @display_page = => 
       return @template_name()
     @game = new tic_tac_foe()
-    @title = ko.observable "Home"  
+    @title = ko.observable "Tic Tac Foe"
+    @centerImages = () =>
+      if(@testDivision != null && @testDivision != undefined)
+        @testDivision.style.top = 500
+        @testDivision.style.left= 600
  
   ##Event Bindings
   Tap_Home: (d, e) =>
@@ -28,6 +32,10 @@ class Main_Controller_VM
       console.log element.id
       if element.id == 'testDivision'
         @game.setupGame element
+        @testDivision = element
+      else if element.id == 'dojoPic'
+        @dojoPic = element
+    @centerImages()
     $(d).trigger("create")
     #v = $(d).find("ul")
     #v.listview 'refresh'
