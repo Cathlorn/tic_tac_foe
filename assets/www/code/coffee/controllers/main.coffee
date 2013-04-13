@@ -26,8 +26,8 @@ class Main_Controller_VM
     gameDivWidth = Math.floor(windowWidth * 0.60)
     $("#testDivision").css("height", gameDivHeight);
     $("#testDivision").css("width", gameDivWidth);
-    $("#testDivision").css("top", 0.27*windowHeight);
-    $("#testDivision").css("left", 0.20*windowWidth);
+    $("#testDivision").css("top", 0.415*gameDivHeight);
+    $("#testDivision").css("left", 0.33*gameDivWidth);
     @game.setupGame @testDivision
  
   ##Event Bindings
