@@ -11,7 +11,7 @@ else
 
 class Main_Controller_VM
   constructor: (inits) ->
-    @template_name = ko.observable Templates.SETTINGS
+    @template_name = ko.observable Templates.HOME
     @display_page = => 
       return @template_name()
     @game = new tic_tac_foe()

@@ -24,7 +24,7 @@
       this.Tap_Home = __bind(this.Tap_Home, this);
 
       var _this = this;
-      this.template_name = ko.observable(Templates.SETTINGS);
+      this.template_name = ko.observable(Templates.HOME);
       this.display_page = function() {
         return _this.template_name();
       };

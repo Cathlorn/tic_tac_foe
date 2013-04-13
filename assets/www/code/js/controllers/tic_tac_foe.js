@@ -56,9 +56,9 @@
       this.gameScheduler.addGame(this.ticTacToe);
     }
 
-    tic_tac_foe.CANVAS_HEIGHT = 500;
+    tic_tac_foe.CANVAS_HEIGHT = 300;
 
-    tic_tac_foe.CANVAS_WIDTH = 500;
+    tic_tac_foe.CANVAS_WIDTH = 300;
 
     return tic_tac_foe;
 
@@ -241,12 +241,17 @@
         }
         return _results;
       };
-      this.GRID_LINE_THICKNESS = 20;
       this.initialize = function(element, canvasArg, height, width) {
+        var temp;
         _this.gameDivision = element;
         _this.canvas = canvasArg;
         _this.CANVAS_HEIGHT = height;
         _this.CANVAS_WIDTH = width;
+        _this.GRID_LINE_THICKNESS = Math.floor(_this.CANVAS_HEIGHT / 50);
+        temp = Math.floor(width / 50);
+        if (temp < _this.GRID_LINE_THICKNESS) {
+          _this.GRID_LINE_THICKNESS = temp;
+        }
         _this.drawGrid(_this.canvas);
         _this.canvasElement = _this.canvas.canvas;
         _this.canvasElement.addEventListener('touchstart', _this.touchEventHandler, false);
@@ -258,10 +263,10 @@
         console.log("Drawing X");
         player = _this.claimedCells[cellId];
         if (player <= 0) {
-          widthIncrement = 500 / 3;
-          heightIncrement = 500 / 3;
-          widthOffset = 30;
-          heightOffset = 30;
+          widthIncrement = _this.CANVAS_WIDTH / 3;
+          heightIncrement = _this.CANVAS_HEIGHT / 3;
+          widthOffset = Math.floor(1.5 * _this.GRID_LINE_THICKNESS);
+          heightOffset = Math.floor(1.5 * _this.GRID_LINE_THICKNESS);
           xPos = cellId % 3;
           yPos = Math.floor(cellId / 3);
           xStart = (xPos * widthIncrement) + widthOffset;
@@ -270,16 +275,16 @@
             yStart += _this.GRID_LINE_THICKNESS;
           }
           xLegLength = heightIncrement - heightOffset;
-          rect = new Rectangle(20, xLegLength);
+          rect = new Rectangle(_this.GRID_LINE_THICKNESS, xLegLength);
           rect.x = xStart;
           rect.y = yStart;
           rect.fill = true;
           rect.fillStyle = 'green';
           rect.rotation = -(Math.PI / 4);
           canvas.append(rect);
-          rect = new Rectangle(20, xLegLength);
+          rect = new Rectangle(_this.GRID_LINE_THICKNESS, xLegLength);
           rect.x = xStart + (xLegLength / Math.sqrt(2));
-          rect.y = yStart - (20 / Math.sqrt(2));
+          rect.y = yStart - (_this.GRID_LINE_THICKNESS / Math.sqrt(2));
           rect.fill = true;
           rect.fillStyle = 'green';
           rect.rotation = Math.PI / 4;
@@ -294,11 +299,11 @@
         console.log("Drawing O");
         player = _this.claimedCells[cellId];
         if (player <= 0) {
-          widthIncrement = 500 / 3;
-          heightIncrement = 500 / 3;
-          widthOffset = widthIncrement / 2 + 10;
-          circleRadius = (heightIncrement - 40) / 2;
-          heightOffset = heightIncrement / 2 + 10;
+          widthIncrement = _this.CANVAS_WIDTH / 3;
+          heightIncrement = _this.CANVAS_HEIGHT / 3;
+          widthOffset = widthIncrement / 2 + Math.floor(_this.GRID_LINE_THICKNESS / 2);
+          circleRadius = (heightIncrement - (2 * _this.GRID_LINE_THICKNESS)) / 2;
+          heightOffset = heightIncrement / 2 + Math.floor(_this.GRID_LINE_THICKNESS / 2);
           xPos = cellId % 3;
           yPos = Math.floor(cellId / 3);
           if (yPos > 0) {
@@ -309,7 +314,7 @@
           circle = new Circle(circleRadius);
           circle.x = xStart;
           circle.y = yStart;
-          circle.strokeWidth = 10;
+          circle.strokeWidth = _this.GRID_LINE_THICKNESS / 2;
           circle.stroke = 'black';
           circle.strokeOpacity = 1;
           canvas.append(circle);

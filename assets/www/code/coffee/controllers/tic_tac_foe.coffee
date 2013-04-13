@@ -70,8 +70,8 @@ class tic_tac_foe
     
     @gameScheduler.addGame(@ticTacToe)
     
-  @CANVAS_HEIGHT=500
-  @CANVAS_WIDTH=500
+  @CANVAS_HEIGHT=300
+  @CANVAS_WIDTH=300
 
 #Describes the current run status of the game
 GameState =
@@ -281,8 +281,6 @@ class TicTacToe extends Game
           lookup.yend = yStart + heightIncrement
           @cellLookup.push lookup
           @claimedCells.push 0
-        
-    @GRID_LINE_THICKNESS=20
 
     #Method prepares the game for launch.
     @initialize = (element, canvasArg, height, width) =>
@@ -290,6 +288,10 @@ class TicTacToe extends Game
       @canvas = canvasArg
       @CANVAS_HEIGHT = height
       @CANVAS_WIDTH = width
+      @GRID_LINE_THICKNESS=Math.floor(@CANVAS_HEIGHT/50)
+      temp = Math.floor(width/50)
+      if(temp < @GRID_LINE_THICKNESS)
+        @GRID_LINE_THICKNESS=temp
       @drawGrid(@canvas)
       @canvasElement = @canvas.canvas
       @canvasElement.addEventListener('touchstart', @touchEventHandler, false);
@@ -304,10 +306,10 @@ class TicTacToe extends Game
       player = @claimedCells[cellId]
       
       if(player <= 0)
-        widthIncrement = 500/3
-        heightIncrement = 500/3
-        widthOffset = 30
-        heightOffset = 30
+        widthIncrement = @CANVAS_WIDTH/3
+        heightIncrement = @CANVAS_HEIGHT/3
+        widthOffset = Math.floor(1.5*@GRID_LINE_THICKNESS)
+        heightOffset = Math.floor(1.5*@GRID_LINE_THICKNESS)
         xPos = cellId % 3
         yPos = Math.floor (cellId / 3)
         xStart = (xPos*widthIncrement) + widthOffset
@@ -317,7 +319,7 @@ class TicTacToe extends Game
           yStart += @GRID_LINE_THICKNESS
       
         xLegLength = heightIncrement - heightOffset
-        rect = new Rectangle 20, xLegLength
+        rect = new Rectangle @GRID_LINE_THICKNESS, xLegLength
         rect.x = xStart
         rect.y = yStart
         rect.fill = true
@@ -325,9 +327,9 @@ class TicTacToe extends Game
         rect.rotation =  -(Math.PI / 4)
         canvas.append rect
         #Starting position of next grid (top, left corner) minus the width offset and thickness of the line
-        rect = new Rectangle 20, xLegLength
+        rect = new Rectangle @GRID_LINE_THICKNESS, xLegLength
         rect.x = xStart + (xLegLength / Math.sqrt(2))
-        rect.y = yStart - (20/ Math.sqrt(2))
+        rect.y = yStart - (@GRID_LINE_THICKNESS/ Math.sqrt(2))
         rect.fill = true
         rect.fillStyle = 'green'
         rect.rotation =  (Math.PI / 4)
@@ -344,11 +346,11 @@ class TicTacToe extends Game
       player = @claimedCells[cellId]
       
       if(player <= 0)
-        widthIncrement = 500/3
-        heightIncrement = 500/3
-        widthOffset = widthIncrement/2 + 10
-        circleRadius = (heightIncrement - 40)/2
-        heightOffset = heightIncrement/2 + 10
+        widthIncrement = @CANVAS_WIDTH/3
+        heightIncrement = @CANVAS_HEIGHT/3
+        widthOffset = widthIncrement/2 + Math.floor(@GRID_LINE_THICKNESS/2)
+        circleRadius = (heightIncrement - (2*@GRID_LINE_THICKNESS))/2
+        heightOffset = heightIncrement/2 + Math.floor(@GRID_LINE_THICKNESS/2)
         xPos = cellId % 3
         yPos = Math.floor (cellId / 3)
 
@@ -360,7 +362,7 @@ class TicTacToe extends Game
         circle = new Circle circleRadius
         circle.x = xStart
         circle.y = yStart
-        circle.strokeWidth = 10
+        circle.strokeWidth = (@GRID_LINE_THICKNESS/2)
         circle.stroke = 'black'
         circle.strokeOpacity = 1
         #circle.fill = true
