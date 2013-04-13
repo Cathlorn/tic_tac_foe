@@ -32,7 +32,7 @@
 		<script src="third_party/knockout/knockout-2.2.0.debug.js" type="text/javascript"></script>
 		<script src="third_party/ko-external-template/koExternalTemplateEngine_all.js" type="text/javascript"></script>
 
-                <!-- Loading Graphics library -->
+		<!-- Loading Graphics library -->
 		<script src="third_party/cakejs/cake.js" type="text/javascript"></script>
 
 		<!-- Include all style sheets files -->
@@ -40,6 +40,15 @@
 		<link rel="stylesheet" type="text/css" href="style/css/fixes.css">
 
 		<!-- Our View Models -->
+		<!-- Include phone gap resources to access from coffee script -->
+        <!--<script type="text/javascript" charset="utf-8" src="phonegap-1.2.0.js"></script> -->
+		<script type="text/javascript">
+			if ( typeof module !== "undefined" && module.exports) {
+				exports.Media = Media;
+			} else {
+				window.Media = Media;
+			}
+		</script>
 
 		<!-- Our Controllers - Always after models-->
 		<script src="code/js/controllers/paper_rock_scissors.js" type="text/javascript"></script>

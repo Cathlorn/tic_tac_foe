@@ -6,9 +6,11 @@
 if typeof module != "undefined" && module.exports
   #On a server
   PaperRockScissors = require("paper_rock_scissors.coffee").PaperRockScissors
+  Media = require("index.html").Media
 else
   #On a client
   PaperRockScissors = window.PaperRockScissors
+  Media = window.Media
   
 #Adding array method to remove elements cleanly from an array
 #Courtesy of Stack Overflow
@@ -238,6 +240,24 @@ class TicTacToe extends Game
               @announceWinner(winner)
             else
               @decideTurn()
+              
+    #Method playsback an audio file using phonegap.
+    #Source modified from:
+    #http://docs.phonegap.com/en/1.2.0/phonegap_media_media.md.html#media.play
+    @playSound = (filename, successCallback, failCallback) ->
+      if(Media != null && Media != undefined)
+        #Create Media object from filename
+        my_media = new Media(filename, successCallback, failCallback);
+        #Play audio
+        my_media.play();
+      
+    #Method triggers when the main music finishes playing
+    @mainMusicSuccess = ()=>
+      @playSound('sounds/main.aac', @mainMusicSuccess, @mainMusicFail)
+
+    #Method triggers when the main music fails to play
+    @mainMusicFail = ()=>
+      @playSound('sounds/main.aac', @mainMusicSuccess, @mainMusicFail)
 
     #Method draws the tic tac toe grid onto the canvas.
     #Params: canvas - Canvas the grid will be drawn on.
@@ -299,6 +319,7 @@ class TicTacToe extends Game
       @canvasElement.addEventListener('touchstart', @touchEventHandler, false);
       @currentGameState = GameState.GAME_IN_PROGRESS
       @gameWinner = 0
+      @playSound('sounds/main.aac', @mainMusicSuccess, @mainMusicFail)
       
     #Method draws X onto the tic tac toe grid at cellId location.
     #Params: canvas - Canvas the X will be drawn on.
