@@ -70,8 +70,8 @@ class tic_tac_foe
     
     @gameScheduler.addGame(@ticTacToe)
     
-  @CANVAS_HEIGHT=300
-  @CANVAS_WIDTH=300
+  @CANVAS_HEIGHT=100
+  @CANVAS_WIDTH=100
 
 #Describes the current run status of the game
 GameState =
@@ -225,17 +225,18 @@ class TicTacToe extends Game
         touchPosInCanvas=getElementPositionFromEvent(@canvas.canvas, touchevent.targetTouches[0])
         cellId=@determineCellSelected touchPosInCanvas.x, touchPosInCanvas.y
         console.log("CellId: " + cellId)
-        playerId = @getCurrentPlayer()
-        if(playerId == 1)
-          @drawX(@canvas, cellId)
-        else
-          @drawO(@canvas, cellId)
+        if(cellId >= 0)
+          playerId = @getCurrentPlayer()
+          if(playerId == 1)
+            @drawX(@canvas, cellId)
+          else
+            @drawO(@canvas, cellId)
         
-        winner = @updateWinner(cellId, playerId)
-        if(winner > 0)
-          @announceWinner(winner)
-        else
-          @decideTurn()
+          winner = @updateWinner(cellId, playerId)
+          if(winner > 0)
+            @announceWinner(winner)
+          else
+            @decideTurn()
 
     #Method draws the tic tac toe grid onto the canvas.
     #Params: canvas - Canvas the grid will be drawn on.
@@ -308,8 +309,8 @@ class TicTacToe extends Game
       if(player <= 0)
         widthIncrement = @CANVAS_WIDTH/3
         heightIncrement = @CANVAS_HEIGHT/3
-        widthOffset = Math.floor(1.5*@GRID_LINE_THICKNESS)
-        heightOffset = Math.floor(1.5*@GRID_LINE_THICKNESS)
+        widthOffset = Math.floor(2*@GRID_LINE_THICKNESS)
+        heightOffset = Math.floor(2*@GRID_LINE_THICKNESS)
         xPos = cellId % 3
         yPos = Math.floor (cellId / 3)
         xStart = (xPos*widthIncrement) + widthOffset

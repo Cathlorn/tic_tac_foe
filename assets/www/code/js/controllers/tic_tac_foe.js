@@ -56,9 +56,9 @@
       this.gameScheduler.addGame(this.ticTacToe);
     }
 
-    tic_tac_foe.CANVAS_HEIGHT = 300;
+    tic_tac_foe.CANVAS_HEIGHT = 100;
 
-    tic_tac_foe.CANVAS_WIDTH = 300;
+    tic_tac_foe.CANVAS_WIDTH = 100;
 
     return tic_tac_foe;
 
@@ -182,17 +182,19 @@
           touchPosInCanvas = getElementPositionFromEvent(_this.canvas.canvas, touchevent.targetTouches[0]);
           cellId = _this.determineCellSelected(touchPosInCanvas.x, touchPosInCanvas.y);
           console.log("CellId: " + cellId);
-          playerId = _this.getCurrentPlayer();
-          if (playerId === 1) {
-            _this.drawX(_this.canvas, cellId);
-          } else {
-            _this.drawO(_this.canvas, cellId);
-          }
-          winner = _this.updateWinner(cellId, playerId);
-          if (winner > 0) {
-            return _this.announceWinner(winner);
-          } else {
-            return _this.decideTurn();
+          if (cellId >= 0) {
+            playerId = _this.getCurrentPlayer();
+            if (playerId === 1) {
+              _this.drawX(_this.canvas, cellId);
+            } else {
+              _this.drawO(_this.canvas, cellId);
+            }
+            winner = _this.updateWinner(cellId, playerId);
+            if (winner > 0) {
+              return _this.announceWinner(winner);
+            } else {
+              return _this.decideTurn();
+            }
           }
         }
       };
@@ -265,8 +267,8 @@
         if (player <= 0) {
           widthIncrement = _this.CANVAS_WIDTH / 3;
           heightIncrement = _this.CANVAS_HEIGHT / 3;
-          widthOffset = Math.floor(1.5 * _this.GRID_LINE_THICKNESS);
-          heightOffset = Math.floor(1.5 * _this.GRID_LINE_THICKNESS);
+          widthOffset = Math.floor(2 * _this.GRID_LINE_THICKNESS);
+          heightOffset = Math.floor(2 * _this.GRID_LINE_THICKNESS);
           xPos = cellId % 3;
           yPos = Math.floor(cellId / 3);
           xStart = (xPos * widthIncrement) + widthOffset;
