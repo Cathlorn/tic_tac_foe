@@ -70,8 +70,8 @@ class tic_tac_foe
     
     @gameScheduler.addGame(@ticTacToe)
     
-  @CANVAS_HEIGHT=100
-  @CANVAS_WIDTH=100
+  @CANVAS_HEIGHT=114
+  @CANVAS_WIDTH=114
 
 #Describes the current run status of the game
 GameState =

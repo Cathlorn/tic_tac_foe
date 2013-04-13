@@ -56,9 +56,9 @@
       this.gameScheduler.addGame(this.ticTacToe);
     }
 
-    tic_tac_foe.CANVAS_HEIGHT = 100;
+    tic_tac_foe.CANVAS_HEIGHT = 114;
 
-    tic_tac_foe.CANVAS_WIDTH = 100;
+    tic_tac_foe.CANVAS_WIDTH = 114;
 
     return tic_tac_foe;
 
