@@ -16,10 +16,14 @@ class Main_Controller_VM
       return @template_name()
     @game = new tic_tac_foe()
     @title = ko.observable "Tic Tac Foe"
+    windowWidth=$(window).width()
+    windowHeight=$(window).height()
     @gameWorkArea = document.getElementById('gameWorkArea')
     @testDivision = document.getElementById('testDivision')
-    gameDivHeight = Math.floor(@gameWorkArea.offsetHeight * 0.65)
-    gameDivWidth = Math.floor(@gameWorkArea.offsetWidth * 0.55)
+    #gameDivHeight = Math.floor(@gameWorkArea.offsetHeight * 0.65)
+    #gameDivWidth = Math.floor(@gameWorkArea.offsetWidth * 0.55)
+    gameDivHeight = Math.floor(windowHeight * 0.65)
+    gameDivWidth = Math.floor(windowWidth * 0.55)
     $("#testDivision").css("height", gameDivHeight);
     $("#testDivision").css("width", gameDivWidth);
     @game.setupGame @testDivision

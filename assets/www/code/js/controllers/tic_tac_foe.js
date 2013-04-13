@@ -84,7 +84,7 @@
         canvasHeight = element.offsetHeight;
         canvasWidth = element.offsetWidth;
         $("#oImage").css("display", "none");
-        _this.canvasElement = E.canvas(canvasHeight, canvasWidth);
+        _this.canvasElement = E.canvas(canvasWidth, canvasHeight);
         _this.canvas = new Canvas(_this.canvasElement);
         return element.appendChild(_this.canvasElement);
       };
@@ -186,14 +186,14 @@
       this.drawGrid = function(canvas) {
         var heightIncrement, i, lookup, rect, scale, widthIncrement, xStart, yStart, _i, _j, _k, _results;
         console.log("Drawing Grid");
-        widthIncrement = this.CANVAS_WIDTH / 3;
-        heightIncrement = this.CANVAS_HEIGHT / 3;
+        widthIncrement = Math.floor(this.CANVAS_WIDTH / 3);
+        heightIncrement = Math.floor(this.CANVAS_HEIGHT / 3);
         this.cellLookup = [];
         this.claimedCells = [];
         yStart = 0;
         xStart = 0;
         for (scale = _i = 1; _i <= 2; scale = ++_i) {
-          rect = new Rectangle(this.GRID_LINE_THICKNESS, this.CANVAS_WIDTH);
+          rect = new Rectangle(this.GRID_LINE_THICKNESS, this.CANVAS_HEIGHT);
           xStart += widthIncrement;
           rect.x = xStart;
           rect.y = yStart;
@@ -205,7 +205,7 @@
         yStart = 0;
         for (scale = _j = 1; _j <= 2; scale = ++_j) {
           yStart += heightIncrement;
-          rect = new Rectangle(this.CANVAS_HEIGHT, this.GRID_LINE_THICKNESS);
+          rect = new Rectangle(this.CANVAS_WIDTH, this.GRID_LINE_THICKNESS);
           rect.x = xStart;
           rect.y = yStart;
           rect.fill = true;

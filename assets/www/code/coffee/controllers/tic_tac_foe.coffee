@@ -89,7 +89,7 @@ class tic_tac_foe
       canvasHeight = element.offsetHeight
       canvasWidth = element.offsetWidth
       $("#oImage").css("display", "none");
-      @canvasElement = E.canvas canvasHeight, canvasWidth
+      @canvasElement = E.canvas canvasWidth, canvasHeight
       @canvas = new Canvas @canvasElement
       element.appendChild @canvasElement
     
@@ -222,8 +222,8 @@ class TicTacToe
     #Params: canvas - Canvas the grid will be drawn on.
     @drawGrid = (canvas) ->
       console.log "Drawing Grid"
-      widthIncrement = @CANVAS_WIDTH/3
-      heightIncrement = @CANVAS_HEIGHT/3
+      widthIncrement = Math.floor(@CANVAS_WIDTH / 3)
+      heightIncrement = Math.floor(@CANVAS_HEIGHT / 3)
 
       @cellLookup = []
       @claimedCells = []
@@ -231,7 +231,7 @@ class TicTacToe
       yStart = 0
       xStart = 0
       for scale in [1..2]
-        rect = new Rectangle @GRID_LINE_THICKNESS, @CANVAS_WIDTH
+        rect = new Rectangle @GRID_LINE_THICKNESS, @CANVAS_HEIGHT
         xStart += widthIncrement
         rect.x = xStart
         rect.y = yStart
@@ -243,7 +243,7 @@ class TicTacToe
       yStart = 0
       for scale in [1..2]
         yStart += heightIncrement
-        rect = new Rectangle @CANVAS_HEIGHT, @GRID_LINE_THICKNESS
+        rect = new Rectangle @CANVAS_WIDTH, @GRID_LINE_THICKNESS
         rect.x = xStart
         rect.y = yStart
         rect.fill = true

@@ -23,7 +23,7 @@
 
       this.Tap_Home = __bind(this.Tap_Home, this);
 
-      var gameDivHeight, gameDivWidth,
+      var gameDivHeight, gameDivWidth, windowHeight, windowWidth,
         _this = this;
       this.template_name = ko.observable(Templates.HOME);
       this.display_page = function() {
@@ -31,10 +31,12 @@
       };
       this.game = new tic_tac_foe();
       this.title = ko.observable("Tic Tac Foe");
+      windowWidth = $(window).width();
+      windowHeight = $(window).height();
       this.gameWorkArea = document.getElementById('gameWorkArea');
       this.testDivision = document.getElementById('testDivision');
-      gameDivHeight = Math.floor(this.gameWorkArea.offsetHeight * 0.65);
-      gameDivWidth = Math.floor(this.gameWorkArea.offsetWidth * 0.55);
+      gameDivHeight = Math.floor(windowHeight * 0.65);
+      gameDivWidth = Math.floor(windowWidth * 0.55);
       $("#testDivision").css("height", gameDivHeight);
       $("#testDivision").css("width", gameDivWidth);
       this.game.setupGame(this.testDivision);
