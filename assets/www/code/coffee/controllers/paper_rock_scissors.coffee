@@ -100,33 +100,17 @@ class PaperRockScissors
 
     #Method prepares the game for launch.
     @initialize = () =>
-
-      #Add Rock
-      newButton = document.createElement("input")
-      newButton.setAttribute("type", "button")
-      newButton.setAttribute("value", "Rock")
-      newButton.setAttribute("name", "RockButton")
-      newButton.addEventListener('click', @onRock, false)
-      @gameDivision.appendChild(newButton)
-      @rockButton = newButton
-      
-      #Add Paper
-      newButton = document.createElement("input")
-      newButton.setAttribute("type", "button")
-      newButton.setAttribute("value", "Paper")
-      newButton.setAttribute("name", "PaperButton")
-      newButton.addEventListener('click', @onPaper, false)
-      @gameDivision.appendChild(newButton)
-      @paperButton = newButton
-      
-      #Add Scissors
-      newButton = document.createElement("input")
-      newButton.setAttribute("type", "button")
-      newButton.setAttribute("value", "Scissors")
-      newButton.setAttribute("name", "ScissorsButton")
-      newButton.addEventListener('click', @onScissors, false)
-      @gameDivision.appendChild(newButton)
-      @scissorsButton = newButton
+      elem = document.createElement("div");
+      elem.id = 'prsDiv'
+      elem.innerHTML = "<div><button id='RockButton'>Rock</button><br/><button id='PaperButton'>Paper</button><br/><button id='ScissorsButton'>Scissors</button></div>"
+      @paperRockScissorsDiv = elem
+      gameDivision.appendChild(elem)
+      @rockButton = document.getElementById('RockButton')
+      @rockButton.addEventListener('click', @onRock, false)
+      @paperButton = document.getElementById('PaperButton')
+      @paperButton.addEventListener('click', @onPaper, false)
+      @scissorsButton = document.getElementById('ScissorsButton')
+      @scissorsButton.addEventListener('click', @onScissors, false)
       @currentGameState = GameState.GAME_IN_PROGRESS
       @gameWinner = 0
        
@@ -232,18 +216,22 @@ class PaperRockScissors
       if(@currentGameState == GameState.GAME_UNSTARTED)
         @initialize()
       else
-        @rockButton.style.display = @prevButtonVisibility
-        @paperButton.style.display = @prevButtonVisibility
-        @scissorsButton.style.display = @prevButtonVisibility
+        #@rockButton.style.display = @prevButtonVisibility
+        #@paperButton.style.display = @prevButtonVisibility
+        #@scissorsButton.style.display = @prevButtonVisibility
+        @paperRockScissorsDiv.style.display = @prevButtonVisibility
         @currentGameState = GameState.GAME_IN_PROGRESS
 
     #Method suspends game and prepares for another game to launch
     @suspend = () =>
       console.log "Suspending game"
-      @prevButtonVisibility = @rockButton.style.display
-      @rockButton.style.display = 'none'
-      @paperButton.style.display = 'none'
-      @scissorsButton.style.display = 'none'
+      @prevButtonVisibility = @paperRockScissorsDiv.style.display
+      @paperRockScissorsDiv.style.display = 'none'
+
+      #@prevButtonVisibility = @rockButton.style.display
+      #@rockButton.style.display = 'none'
+      #@paperButton.style.display = 'none'
+      #@scissorsButton.style.display = 'none'
       @currentGameState = GameState.GAME_SUSPENDED
       for idx in [0..(@registeredSuspendCallbacks.length - 1)]
         callback = @registeredSuspendCallbacks[idx]
@@ -252,10 +240,13 @@ class PaperRockScissors
     #Method terminates game
     @terminate = () =>
       console.log "Terminating game"
-      @prevButtonVisibility = @rockButton.style.display
-      @rockButton.style.display = 'none'
-      @paperButton.style.display = 'none'
-      @scissorsButton.style.display = 'none'
+      @prevButtonVisibility = @paperRockScissorsDiv.style.display
+      @paperRockScissorsDiv.style.display = 'none'
+      
+      #@prevButtonVisibility = @rockButton.style.display
+      #@rockButton.style.display = 'none'
+      #@paperButton.style.display = 'none'
+      #@scissorsButton.style.display = 'none'
       @currentGameState = GameState.GAME_TERMINATED
       for idx in [0..(@registeredTerminationCallbacks.length - 1)]
         callback = @registeredTerminationCallbacks[idx]

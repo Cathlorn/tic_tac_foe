@@ -76,28 +76,18 @@
         }
       };
       this.initialize = function() {
-        var newButton;
-        newButton = document.createElement("input");
-        newButton.setAttribute("type", "button");
-        newButton.setAttribute("value", "Rock");
-        newButton.setAttribute("name", "RockButton");
-        newButton.addEventListener('click', _this.onRock, false);
-        _this.gameDivision.appendChild(newButton);
-        _this.rockButton = newButton;
-        newButton = document.createElement("input");
-        newButton.setAttribute("type", "button");
-        newButton.setAttribute("value", "Paper");
-        newButton.setAttribute("name", "PaperButton");
-        newButton.addEventListener('click', _this.onPaper, false);
-        _this.gameDivision.appendChild(newButton);
-        _this.paperButton = newButton;
-        newButton = document.createElement("input");
-        newButton.setAttribute("type", "button");
-        newButton.setAttribute("value", "Scissors");
-        newButton.setAttribute("name", "ScissorsButton");
-        newButton.addEventListener('click', _this.onScissors, false);
-        _this.gameDivision.appendChild(newButton);
-        _this.scissorsButton = newButton;
+        var elem;
+        elem = document.createElement("div");
+        elem.id = 'prsDiv';
+        elem.innerHTML = "<div><button id='RockButton'>Rock</button><br/><button id='PaperButton'>Paper</button><br/><button id='ScissorsButton'>Scissors</button></div>";
+        _this.paperRockScissorsDiv = elem;
+        gameDivision.appendChild(elem);
+        _this.rockButton = document.getElementById('RockButton');
+        _this.rockButton.addEventListener('click', _this.onRock, false);
+        _this.paperButton = document.getElementById('PaperButton');
+        _this.paperButton.addEventListener('click', _this.onPaper, false);
+        _this.scissorsButton = document.getElementById('ScissorsButton');
+        _this.scissorsButton.addEventListener('click', _this.onScissors, false);
         _this.currentGameState = GameState.GAME_IN_PROGRESS;
         return _this.gameWinner = 0;
       };
@@ -190,19 +180,15 @@
         if (_this.currentGameState === GameState.GAME_UNSTARTED) {
           return _this.initialize();
         } else {
-          _this.rockButton.style.display = _this.prevButtonVisibility;
-          _this.paperButton.style.display = _this.prevButtonVisibility;
-          _this.scissorsButton.style.display = _this.prevButtonVisibility;
+          _this.paperRockScissorsDiv.style.display = _this.prevButtonVisibility;
           return _this.currentGameState = GameState.GAME_IN_PROGRESS;
         }
       };
       this.suspend = function() {
         var callback, idx, _i, _ref, _results;
         console.log("Suspending game");
-        _this.prevButtonVisibility = _this.rockButton.style.display;
-        _this.rockButton.style.display = 'none';
-        _this.paperButton.style.display = 'none';
-        _this.scissorsButton.style.display = 'none';
+        _this.prevButtonVisibility = _this.paperRockScissorsDiv.style.display;
+        _this.paperRockScissorsDiv.style.display = 'none';
         _this.currentGameState = GameState.GAME_SUSPENDED;
         _results = [];
         for (idx = _i = 0, _ref = _this.registeredSuspendCallbacks.length - 1; 0 <= _ref ? _i <= _ref : _i >= _ref; idx = 0 <= _ref ? ++_i : --_i) {
@@ -214,10 +200,8 @@
       this.terminate = function() {
         var callback, idx, _i, _ref, _results;
         console.log("Terminating game");
-        _this.prevButtonVisibility = _this.rockButton.style.display;
-        _this.rockButton.style.display = 'none';
-        _this.paperButton.style.display = 'none';
-        _this.scissorsButton.style.display = 'none';
+        _this.prevButtonVisibility = _this.paperRockScissorsDiv.style.display;
+        _this.paperRockScissorsDiv.style.display = 'none';
         _this.currentGameState = GameState.GAME_TERMINATED;
         _results = [];
         for (idx = _i = 0, _ref = _this.registeredTerminationCallbacks.length - 1; 0 <= _ref ? _i <= _ref : _i >= _ref; idx = 0 <= _ref ? ++_i : --_i) {
