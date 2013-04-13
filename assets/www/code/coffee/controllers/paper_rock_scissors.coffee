@@ -139,9 +139,17 @@ class PaperRockScissors
       if(@currentPlayer == 1)
         @currentPlayer = 2
         $('#playerStatusLabel').text('Current Player: Player 2');
+        $("#xImageGlow").css("display", "none");
+        $("#oImage").css("display", "none");
+        $("#xImage").css("display", "block");
+        $("#oImageGlow").css("display", "block");
       else
         @currentPlayer = 1
         $('#playerStatusLabel').text('Current Player: Player 1');
+        $("#oImageGlow").css("display", "none");
+        $("#xImage").css("display", "none");
+        $("#oImage").css("display", "block");
+        $("#xImageGlow").css("display", "block");
         
       return @currentPlayer
 

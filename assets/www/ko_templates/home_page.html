@@ -6,7 +6,6 @@ Home Page
 	img {
 		display: block;
 		margin: 1em auto;
-		border: 1px solid black;
 	}
 
 	#testDivision {
@@ -18,6 +17,7 @@ Home Page
 	}
 
 	#dojoPic {
+		border: 1px solid black;
 		z-index: 20;
 		height: 200px;
 		width: 200px;
@@ -39,7 +39,7 @@ Home Page
 		text-align : center;
 	}
 	
-	#xImage
+	#xImage, #xImageGlow
     {
 		z-index: 50;
 		height: 40px;
@@ -49,7 +49,7 @@ Home Page
 		left: 60px;
     }
     
-	#oImage
+	#oImage, #oImageGlow
     {
 		z-index: 50;
 		height: 40px;
@@ -77,8 +77,10 @@ Home Page
 </style>
 <p id='playerStatusLabel'>Current Player: Player 1</p>
 <img id='dojoPic' src="images/main.bmp" ></img>
-<img id='xImage' src="images/x.bmp" ></img>
-<img id='oImage' src="images/o.bmp" ></img>
+<img id='xImage' src="images/x_big.png" style='display: none' ></img>
+<img id='xImageGlow' src="images/x_big_glow.png" ></img>
+<img id='oImage' src="images/o_big.png" ></img>
+<img id='oImageGlow' src="images/o_big_glow.png" style='display: none' ></img>
 <div id='testDivision'>
   <!--<canvas id='gameCanvas'></canvas> -->
   <div id='prsDiv' style='display: none'>
