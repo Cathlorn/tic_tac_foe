@@ -76,12 +76,8 @@
         }
       };
       this.initialize = function() {
-        var elem;
-        elem = document.createElement("div");
-        elem.id = 'prsDiv';
-        elem.innerHTML = "<div><button id='RockButton'>Rock</button><br/><button id='PaperButton'>Paper</button><br/><button id='ScissorsButton'>Scissors</button></div>";
-        _this.paperRockScissorsDiv = elem;
-        gameDivision.appendChild(elem);
+        _this.paperRockScissorsDiv = document.getElementById('prsDiv');
+        _this.paperRockScissorsDiv.style.display = 'block';
         _this.rockButton = document.getElementById('RockButton');
         _this.rockButton.addEventListener('click', _this.onRock, false);
         _this.paperButton = document.getElementById('PaperButton');

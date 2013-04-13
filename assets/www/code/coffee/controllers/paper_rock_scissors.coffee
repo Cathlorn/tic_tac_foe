@@ -100,11 +100,13 @@ class PaperRockScissors
 
     #Method prepares the game for launch.
     @initialize = () =>
-      elem = document.createElement("div");
-      elem.id = 'prsDiv'
-      elem.innerHTML = "<div><button id='RockButton'>Rock</button><br/><button id='PaperButton'>Paper</button><br/><button id='ScissorsButton'>Scissors</button></div>"
-      @paperRockScissorsDiv = elem
-      gameDivision.appendChild(elem)
+      #elem = document.createElement("div");
+      #elem.id = 'prsDiv'
+      #elem.innerHTML = ("<div><button id='RockButton' style='margin: auto; text-align: center;'>Rock</button><br/>" + "<button id='PaperButton' style='margin: auto; text-align: center;'>Paper</button><br/>" + "<button id='ScissorsButton' style='margin: auto; text-align: center;'>Scissors</button></div>")
+      #@paperRockScissorsDiv = elem
+      #gameDivision.appendChild(elem)
+      @paperRockScissorsDiv = document.getElementById('prsDiv')
+      @paperRockScissorsDiv.style.display = 'block'
       @rockButton = document.getElementById('RockButton')
       @rockButton.addEventListener('click', @onRock, false)
       @paperButton = document.getElementById('PaperButton')
@@ -216,10 +218,8 @@ class PaperRockScissors
       if(@currentGameState == GameState.GAME_UNSTARTED)
         @initialize()
       else
-        #@rockButton.style.display = @prevButtonVisibility
-        #@paperButton.style.display = @prevButtonVisibility
-        #@scissorsButton.style.display = @prevButtonVisibility
         @paperRockScissorsDiv.style.display = @prevButtonVisibility
+        #@paperRockScissorsDiv.style.display = 'block'
         @currentGameState = GameState.GAME_IN_PROGRESS
 
     #Method suspends game and prepares for another game to launch
@@ -228,10 +228,6 @@ class PaperRockScissors
       @prevButtonVisibility = @paperRockScissorsDiv.style.display
       @paperRockScissorsDiv.style.display = 'none'
 
-      #@prevButtonVisibility = @rockButton.style.display
-      #@rockButton.style.display = 'none'
-      #@paperButton.style.display = 'none'
-      #@scissorsButton.style.display = 'none'
       @currentGameState = GameState.GAME_SUSPENDED
       for idx in [0..(@registeredSuspendCallbacks.length - 1)]
         callback = @registeredSuspendCallbacks[idx]
@@ -243,10 +239,6 @@ class PaperRockScissors
       @prevButtonVisibility = @paperRockScissorsDiv.style.display
       @paperRockScissorsDiv.style.display = 'none'
       
-      #@prevButtonVisibility = @rockButton.style.display
-      #@rockButton.style.display = 'none'
-      #@paperButton.style.display = 'none'
-      #@scissorsButton.style.display = 'none'
       @currentGameState = GameState.GAME_TERMINATED
       for idx in [0..(@registeredTerminationCallbacks.length - 1)]
         callback = @registeredTerminationCallbacks[idx]

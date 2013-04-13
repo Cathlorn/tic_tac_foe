@@ -176,7 +176,7 @@
         return _this.currentPlayer;
       };
       this.touchEventHandler = function(touchevent) {
-        var cellId, playerId, touchPosInCanvas, winner;
+        var cellId, playerId, success, touchPosInCanvas, winner;
         console.log("Touch Event Start Called");
         if (_this.getGameState() === GameState.GAME_IN_PROGRESS) {
           touchPosInCanvas = getElementPositionFromEvent(_this.canvas.canvas, touchevent.targetTouches[0]);
@@ -185,15 +185,17 @@
           if (cellId >= 0) {
             playerId = _this.getCurrentPlayer();
             if (playerId === 1) {
-              _this.drawX(_this.canvas, cellId);
+              success = _this.drawX(_this.canvas, cellId);
             } else {
-              _this.drawO(_this.canvas, cellId);
+              success = _this.drawO(_this.canvas, cellId);
             }
-            winner = _this.updateWinner(cellId, playerId);
-            if (winner > 0) {
-              return _this.announceWinner(winner);
-            } else {
-              return _this.decideTurn();
+            if (success) {
+              winner = _this.updateWinner(cellId, playerId);
+              if (winner > 0) {
+                return _this.announceWinner(winner);
+              } else {
+                return _this.decideTurn();
+              }
             }
           }
         }
@@ -261,9 +263,10 @@
         return _this.gameWinner = 0;
       };
       this.drawX = function(canvas, cellId) {
-        var heightIncrement, heightOffset, player, rect, widthIncrement, widthOffset, xLegLength, xPos, xStart, yPos, yStart;
+        var heightIncrement, heightOffset, player, rect, success, widthIncrement, widthOffset, xLegLength, xPos, xStart, yPos, yStart;
         console.log("Drawing X");
         player = _this.claimedCells[cellId];
+        success = false;
         if (player <= 0) {
           widthIncrement = _this.CANVAS_WIDTH / 3;
           heightIncrement = _this.CANVAS_HEIGHT / 3;
@@ -291,15 +294,18 @@
           rect.fillStyle = 'green';
           rect.rotation = Math.PI / 4;
           canvas.append(rect);
-          return _this.claimedCells[cellId] = _this.getCurrentPlayer();
+          _this.claimedCells[cellId] = _this.getCurrentPlayer();
+          success = true;
         } else {
-          return alert("Cannot pick square");
+          alert("Cannot pick square");
         }
+        return success;
       };
       this.drawO = function(canvas, cellId) {
-        var circle, circleRadius, heightIncrement, heightOffset, player, widthIncrement, widthOffset, xPos, xStart, yPos, yStart;
+        var circle, circleRadius, heightIncrement, heightOffset, player, success, widthIncrement, widthOffset, xPos, xStart, yPos, yStart;
         console.log("Drawing O");
         player = _this.claimedCells[cellId];
+        success = false;
         if (player <= 0) {
           widthIncrement = _this.CANVAS_WIDTH / 3;
           heightIncrement = _this.CANVAS_HEIGHT / 3;
@@ -320,10 +326,12 @@
           circle.stroke = 'black';
           circle.strokeOpacity = 1;
           canvas.append(circle);
-          return _this.claimedCells[cellId] = _this.getCurrentPlayer();
+          _this.claimedCells[cellId] = _this.getCurrentPlayer();
+          success = true;
         } else {
-          return alert("Cannot pick square");
+          alert("Cannot pick square");
         }
+        return success;
       };
       this.drawAnimation = function(canvas, animationType) {
         return console.log("Drawing Animation");

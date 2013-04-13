@@ -228,15 +228,16 @@ class TicTacToe extends Game
         if(cellId >= 0)
           playerId = @getCurrentPlayer()
           if(playerId == 1)
-            @drawX(@canvas, cellId)
+            success=@drawX(@canvas, cellId)
           else
-            @drawO(@canvas, cellId)
+            success=@drawO(@canvas, cellId)
         
-          winner = @updateWinner(cellId, playerId)
-          if(winner > 0)
-            @announceWinner(winner)
-          else
-            @decideTurn()
+          if(success)
+            winner = @updateWinner(cellId, playerId)
+            if(winner > 0)
+              @announceWinner(winner)
+            else
+              @decideTurn()
 
     #Method draws the tic tac toe grid onto the canvas.
     #Params: canvas - Canvas the grid will be drawn on.
@@ -305,7 +306,7 @@ class TicTacToe extends Game
     @drawX = (canvas, cellId) =>
       console.log "Drawing X"
       player = @claimedCells[cellId]
-      
+      success = false
       if(player <= 0)
         widthIncrement = @CANVAS_WIDTH/3
         heightIncrement = @CANVAS_HEIGHT/3
@@ -336,8 +337,11 @@ class TicTacToe extends Game
         rect.rotation =  (Math.PI / 4)
         canvas.append rect
         @claimedCells[cellId] = @getCurrentPlayer()
+        success = true
       else
         alert "Cannot pick square"
+        
+      return success
       
     #Method draws O onto the tic tac toe grid at cellId location.
     #Params: canvas - Canvas the O will be drawn on.
@@ -346,6 +350,7 @@ class TicTacToe extends Game
       console.log "Drawing O"
       player = @claimedCells[cellId]
       
+      success = false
       if(player <= 0)
         widthIncrement = @CANVAS_WIDTH/3
         heightIncrement = @CANVAS_HEIGHT/3
@@ -369,8 +374,11 @@ class TicTacToe extends Game
         #circle.fill = true
         canvas.append circle
         @claimedCells[cellId] = @getCurrentPlayer()
+        success = true
       else
         alert "Cannot pick square"
+        
+      return success
       
     #Method draws an animation sequence onto the canvas.
     #Params: canvas - Canvas the animation will be drawn on.
