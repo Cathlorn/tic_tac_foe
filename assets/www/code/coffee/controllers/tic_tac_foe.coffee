@@ -86,7 +86,10 @@ class tic_tac_foe
     @setupCanvas = (element) =>
       console.log "Setting Up Canvas"
       #@canvasElement = document.getElementById('gameCanvas')
-      @canvasElement = E.canvas 114, 114
+      canvasHeight = element.offsetHeight
+      canvasWidth = element.offsetWidth
+      $("#oImage").css("display", "none");
+      @canvasElement = E.canvas canvasHeight, canvasWidth
       @canvas = new Canvas @canvasElement
       element.appendChild @canvasElement
     

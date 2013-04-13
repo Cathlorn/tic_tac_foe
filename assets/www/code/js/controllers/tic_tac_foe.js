@@ -79,8 +79,12 @@
     function tic_tac_foe(inits) {
       var _this = this;
       this.setupCanvas = function(element) {
+        var canvasHeight, canvasWidth;
         console.log("Setting Up Canvas");
-        _this.canvasElement = E.canvas(114, 114);
+        canvasHeight = element.offsetHeight;
+        canvasWidth = element.offsetWidth;
+        $("#oImage").css("display", "none");
+        _this.canvasElement = E.canvas(canvasHeight, canvasWidth);
         _this.canvas = new Canvas(_this.canvasElement);
         return element.appendChild(_this.canvasElement);
       };

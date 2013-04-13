@@ -16,10 +16,13 @@ class Main_Controller_VM
       return @template_name()
     @game = new tic_tac_foe()
     @title = ko.observable "Tic Tac Foe"
-    @centerImages = () =>
-      if(@testDivision != null && @testDivision != undefined)
-        @testDivision.style.top = 500
-        @testDivision.style.left= 600
+    @gameWorkArea = document.getElementById('gameWorkArea')
+    @testDivision = document.getElementById('testDivision')
+    gameDivHeight = Math.floor(@gameWorkArea.offsetHeight * 0.65)
+    gameDivWidth = Math.floor(@gameWorkArea.offsetWidth * 0.55)
+    $("#testDivision").css("height", gameDivHeight);
+    $("#testDivision").css("width", gameDivWidth);
+    @game.setupGame @testDivision
  
   ##Event Bindings
   Tap_Home: (d, e) =>
@@ -35,7 +38,6 @@ class Main_Controller_VM
         @testDivision = element
       else if element.id == 'dojoPic'
         @dojoPic = element
-    @centerImages()
     $(d).trigger("create")
     #v = $(d).find("ul")
     #v.listview 'refresh'

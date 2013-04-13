@@ -112,6 +112,8 @@ class PaperRockScissors
     @initialize = () =>
       @paperRockScissorsDiv = document.getElementById('prsDiv')
       @paperRockScissorsDiv.style.display = 'block'
+      $('#prsDiv').css("height", "500px");
+      $('#prsDiv').css("width", "500px");
       @rockButton = document.getElementById('RockButton')
       @rockButton.addEventListener('click', @onRock, false)
       @paperButton = document.getElementById('PaperButton')

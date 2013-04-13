@@ -41,7 +41,7 @@
 
 		<!-- Our View Models -->
 		<!-- Include phone gap resources to access from coffee script -->
-        <!--<script type="text/javascript" charset="utf-8" src="phonegap-1.2.0.js"></script> -->
+		<!--<script type="text/javascript" charset="utf-8" src="phonegap-1.2.0.js"></script> -->
 		<script type="text/javascript">
 			if ( typeof module !== "undefined" && module.exports) {
 				exports.Media = Media;
@@ -61,28 +61,102 @@
 
 	</head>
 	<body>
-		<div data-role="page">
 
-			<div data-role="header">
-				<h1 data-bind="text: title">Single page</h1>
-			</div><!-- /header -->
+		<style type="text/css">
+			img {
+				display: block;
+				margin: 1em auto;
+			}
 
-			<!-- ko template: {name: display_page, afterRender: Refresh_JQM} -->
-			<!-- /ko -->
+			#testDivision {
+				z-index: 100;
+				position: absolute;
+				top: 120px;
+				left: 103px;
+				background: white
+			}
+			
+			#gameWorkArea {
+				height:100%
+				width:100%
+			}
 
-			<div data-role="" data-position="fixed">
-				<div data-role="navbar">
-					<ul>
-						<li>
-							<a class="ui-btn-active" data-bind="event: {click: Tap_Home}">Game</a>
-						</li>
-						<li>
-							<a data-bind="event: {click: Tap_Settings}">Settings</a>
-						</li>
-					</ul>
-				</div><!-- /navbar -->
-			</div><!-- /footer -->
+			#dojoPic {
+				border: 1px solid black;
+				z-index: 20;
+				height: 100%;
+				width: 100%;
+				position: absolute;
+				top: 0px;
+				left: 0px;
+			}
 
-		</div><!-- /page -->
+			#prsDiv {
+				height: 114px;
+				width: 114px;
+			}
+
+			#RockButton, #PaperButton, #ScissorsButton {
+				vertical-align: center;
+				margin: auto;
+				text-align: center;
+			}
+
+			#xImage, #xImageGlow {
+				z-index: 50;
+				height: 40px;
+				width: 40px;
+				position: absolute;
+				top: 200px;
+				left: 60px;
+			}
+
+			#oImage, #oImageGlow {
+				z-index: 50;
+				height: 40px;
+				width: 40px;
+				position: absolute;
+				top: 200px;
+				left: 220px;
+			}
+
+			#gameCanvas {
+				z-index: 120;
+				height: 114px;
+				width: 114px;
+			}
+
+			#playerStatusLabel {
+				position: absolute;
+				top: 275px;
+				left: 60px;
+			}
+
+		</style>
+		
+		<div id='gameWorkArea'>
+		<p id='playerStatusLabel'>
+			Current Player: Player 1
+		</p>
+		<img id='dojoPic' src="images/main.bmp" ></img>
+		<img id='xImage' src="images/x_big.png" style='display: none' ></img>
+		<img id='xImageGlow' src="images/x_big_glow.png" ></img>
+		<img id='oImage' src="images/o_big.png" ></img>
+		<img id='oImageGlow' src="images/o_big_glow.png" style='display: none' ></img>
+		<div id='testDivision'>
+			<!--<canvas id='gameCanvas'></canvas> -->
+			<div id='prsDiv' style='display: none'>
+				<button id='RockButton' >
+					Rock
+				</button>
+				<button id='PaperButton' >
+					Paper
+				</button>
+				<button id='ScissorsButton'>
+					Scissors
+				</button>
+			</div>
+		</div>
+        </div>
 	</body>
 </html>

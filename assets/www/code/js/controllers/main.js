@@ -23,19 +23,21 @@
 
       this.Tap_Home = __bind(this.Tap_Home, this);
 
-      var _this = this;
+      var gameDivHeight, gameDivWidth,
+        _this = this;
       this.template_name = ko.observable(Templates.HOME);
       this.display_page = function() {
         return _this.template_name();
       };
       this.game = new tic_tac_foe();
       this.title = ko.observable("Tic Tac Foe");
-      this.centerImages = function() {
-        if (_this.testDivision !== null && _this.testDivision !== void 0) {
-          _this.testDivision.style.top = 500;
-          return _this.testDivision.style.left = 600;
-        }
-      };
+      this.gameWorkArea = document.getElementById('gameWorkArea');
+      this.testDivision = document.getElementById('testDivision');
+      gameDivHeight = Math.floor(this.gameWorkArea.offsetHeight * 0.65);
+      gameDivWidth = Math.floor(this.gameWorkArea.offsetWidth * 0.55);
+      $("#testDivision").css("height", gameDivHeight);
+      $("#testDivision").css("width", gameDivWidth);
+      this.game.setupGame(this.testDivision);
     }
 
     Main_Controller_VM.prototype.Tap_Home = function(d, e) {
@@ -58,7 +60,6 @@
           this.dojoPic = element;
         }
       }
-      this.centerImages();
       $(d).trigger("create");
     };
 
