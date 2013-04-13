@@ -87,10 +87,14 @@
         }
       };
       this.initialize = function() {
+        var buttonHeight;
         _this.paperRockScissorsDiv = document.getElementById('prsDiv');
         _this.paperRockScissorsDiv.style.display = 'block';
-        $('#prsDiv').css("height", "500px");
-        $('#prsDiv').css("width", "500px");
+        _this.testDivision = document.getElementById('testDivision');
+        buttonHeight = Math.floor(0.20 * _this.testDivision.offsetHeight);
+        $("#RockButton").css("font-size", buttonHeight);
+        $("#PaperButton").css("font-size", buttonHeight);
+        $("#ScissorsButton").css("font-size", buttonHeight);
         _this.rockButton = document.getElementById('RockButton');
         _this.rockButton.addEventListener('click', _this.onRock, false);
         _this.paperButton = document.getElementById('PaperButton');
