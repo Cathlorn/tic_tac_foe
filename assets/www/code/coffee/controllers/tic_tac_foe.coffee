@@ -302,6 +302,9 @@ class TicTacToe
           yStart += @GRID_LINE_THICKNESS
       
         xLegLength = heightIncrement
+        if(widthIncrement < xLegLength)
+          xLegLength = widthIncrement
+
         rect = new Rectangle @GRID_LINE_THICKNESS, xLegLength
         rect.x = xStart
         rect.y = yStart
@@ -335,8 +338,12 @@ class TicTacToe
       if(player <= 0)
         widthIncrement = @CANVAS_WIDTH/3
         heightIncrement = @CANVAS_HEIGHT/3
+        minIncrement = heightIncrement
+        if(widthIncrement < minIncrement)
+          minIncrement = widthIncrement
+        
         widthOffset = widthIncrement/2 + Math.floor(@GRID_LINE_THICKNESS/2)
-        circleRadius = (heightIncrement - (2*@GRID_LINE_THICKNESS))/2
+        circleRadius = (minIncrement - (2*@GRID_LINE_THICKNESS))/2
         heightOffset = heightIncrement/2 + Math.floor(@GRID_LINE_THICKNESS/2)
         xPos = cellId % 3
         yPos = Math.floor (cellId / 3)

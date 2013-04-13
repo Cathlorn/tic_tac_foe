@@ -265,6 +265,9 @@
             yStart += _this.GRID_LINE_THICKNESS;
           }
           xLegLength = heightIncrement;
+          if (widthIncrement < xLegLength) {
+            xLegLength = widthIncrement;
+          }
           rect = new Rectangle(_this.GRID_LINE_THICKNESS, xLegLength);
           rect.x = xStart;
           rect.y = yStart;
@@ -287,15 +290,19 @@
         return success;
       };
       this.drawO = function(canvas, cellId) {
-        var circle, circleRadius, heightIncrement, heightOffset, player, success, widthIncrement, widthOffset, xPos, xStart, yPos, yStart;
+        var circle, circleRadius, heightIncrement, heightOffset, minIncrement, player, success, widthIncrement, widthOffset, xPos, xStart, yPos, yStart;
         console.log("Drawing O");
         player = _this.claimedCells[cellId];
         success = false;
         if (player <= 0) {
           widthIncrement = _this.CANVAS_WIDTH / 3;
           heightIncrement = _this.CANVAS_HEIGHT / 3;
+          minIncrement = heightIncrement;
+          if (widthIncrement < minIncrement) {
+            minIncrement = widthIncrement;
+          }
           widthOffset = widthIncrement / 2 + Math.floor(_this.GRID_LINE_THICKNESS / 2);
-          circleRadius = (heightIncrement - (2 * _this.GRID_LINE_THICKNESS)) / 2;
+          circleRadius = (minIncrement - (2 * _this.GRID_LINE_THICKNESS)) / 2;
           heightOffset = heightIncrement / 2 + Math.floor(_this.GRID_LINE_THICKNESS / 2);
           xPos = cellId % 3;
           yPos = Math.floor(cellId / 3);
