@@ -85,7 +85,10 @@
         _this.scissorsButton = document.getElementById('ScissorsButton');
         _this.scissorsButton.addEventListener('click', _this.onScissors, false);
         _this.currentGameState = GameState.GAME_IN_PROGRESS;
-        return _this.gameWinner = 0;
+        _this.gameWinner = 0;
+        _this.playerStatusLabel = document.getElementById('playerStatusLabel');
+        $('#playerStatusLabel').text('Current Player: Player 1');
+        return _this.currentPlayer = 1;
       };
       this.checkForWinner = function(cellId, playerId) {
         console.log("Checking for Winner");
@@ -95,8 +98,10 @@
         console.log("Determining Next Player Turn");
         if (this.currentPlayer === 1) {
           this.currentPlayer = 2;
+          $('#playerStatusLabel').text('Current Player: Player 2');
         } else {
           this.currentPlayer = 1;
+          $('#playerStatusLabel').text('Current Player: Player 1');
         }
         return this.currentPlayer;
       };

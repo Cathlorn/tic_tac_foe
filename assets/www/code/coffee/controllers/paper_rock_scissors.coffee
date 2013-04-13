@@ -100,11 +100,6 @@ class PaperRockScissors
 
     #Method prepares the game for launch.
     @initialize = () =>
-      #elem = document.createElement("div");
-      #elem.id = 'prsDiv'
-      #elem.innerHTML = ("<div><button id='RockButton' style='margin: auto; text-align: center;'>Rock</button><br/>" + "<button id='PaperButton' style='margin: auto; text-align: center;'>Paper</button><br/>" + "<button id='ScissorsButton' style='margin: auto; text-align: center;'>Scissors</button></div>")
-      #@paperRockScissorsDiv = elem
-      #gameDivision.appendChild(elem)
       @paperRockScissorsDiv = document.getElementById('prsDiv')
       @paperRockScissorsDiv.style.display = 'block'
       @rockButton = document.getElementById('RockButton')
@@ -115,6 +110,9 @@ class PaperRockScissors
       @scissorsButton.addEventListener('click', @onScissors, false)
       @currentGameState = GameState.GAME_IN_PROGRESS
       @gameWinner = 0
+      @playerStatusLabel = document.getElementById('playerStatusLabel')
+      $('#playerStatusLabel').text('Current Player: Player 1')
+      @currentPlayer=1
        
     #Method looks at the current placement of items and determines if there is a winner.
     #Returns -1 if no winner is found. Otherwise, the playerId of the winner is returned.
@@ -130,8 +128,10 @@ class PaperRockScissors
       
       if(@currentPlayer == 1)
         @currentPlayer = 2
+        $('#playerStatusLabel').text('Current Player: Player 2');
       else
         @currentPlayer = 1
+        $('#playerStatusLabel').text('Current Player: Player 1');
         
       return @currentPlayer
 

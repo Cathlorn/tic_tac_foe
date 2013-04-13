@@ -143,7 +143,9 @@
               winner = _this.updateWinner(cellId, playerId);
               if (winner > 0) {
                 return _this.announceWinner(winner);
-              } else {
+              } else if (winner === 0) {
+                return _this.resolveTie();
+              } else if (winner < 0) {
                 return _this.decideTurn();
               }
             }
@@ -224,7 +226,9 @@
         _this.canvasElement.addEventListener('touchstart', _this.touchEventHandler, false);
         _this.currentGameState = GameState.GAME_IN_PROGRESS;
         _this.gameWinner = 0;
-        return _this.playSound('sounds/main.aac', _this.mainMusicSuccess, _this.mainMusicFail);
+        _this.playSound('sounds/main.aac', _this.mainMusicSuccess, _this.mainMusicFail);
+        _this.playerStatusLabel = document.getElementById('playerStatusLabel');
+        return $('#playerStatusLabel').text('Current Player: Player 1');
       };
       this.drawX = function(canvas, cellId) {
         var heightIncrement, heightOffset, player, rect, success, widthIncrement, widthOffset, xLegLength, xPos, xStart, yPos, yStart;
@@ -315,8 +319,10 @@
         console.log("Determining Next Player Turn");
         if (this.currentPlayer === 1) {
           this.currentPlayer = 2;
+          $('#playerStatusLabel').text('Current Player: Player 2');
         } else {
           this.currentPlayer = 1;
+          $('#playerStatusLabel').text('Current Player: Player 1');
         }
         return this.currentPlayer;
       };
@@ -385,24 +391,24 @@
           winnerFound = -1;
           matchFound = _this.checkColumn(cellId % 3) || _this.checkDiagonals() || _this.checkRow(Math.floor(cellId / 3));
           if (matchFound) {
-            winnerFound = playerId;
+            winnerFound = 1;
             _this.gameWinner = playerId;
             _this.terminate();
           } else if (_this.allCellsOccupied()) {
-            alert("Tie reached!");
-            _this.addMiniGameToScheduler();
-            _this.suspend();
+            winnerFound = 0;
           }
         }
-        return _this.gameWinner;
-      };
-      this.checkForWinner = function(cellId, playerId) {
-        console.log("Checking for Winner");
-        return _this.gameWinner;
+        return winnerFound;
       };
       this.announceWinner = function(playerId) {
         console.log("Announcing Winner");
         return alert("Player " + playerId + " wins!");
+      };
+      this.resolveTie = function() {
+        console.log("Resolving Tie");
+        alert("Tie reached!");
+        this.addMiniGameToScheduler();
+        return this.suspend();
       };
       this.addMiniGameToScheduler = function() {
         var paperRockScissors;

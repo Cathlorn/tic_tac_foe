@@ -177,7 +177,9 @@ class TicTacToe
             winner = @updateWinner(cellId, playerId)
             if(winner > 0)
               @announceWinner(winner)
-            else
+            else if (winner == 0)
+              @resolveTie()
+            else if(winner < 0)
               @decideTurn()
               
     #Method playsback an audio file using phonegap.
@@ -259,6 +261,8 @@ class TicTacToe
       @currentGameState = GameState.GAME_IN_PROGRESS
       @gameWinner = 0
       @playSound('sounds/main.aac', @mainMusicSuccess, @mainMusicFail)
+      @playerStatusLabel = document.getElementById('playerStatusLabel')
+      $('#playerStatusLabel').text('Current Player: Player 1');
       
     #Method draws X onto the tic tac toe grid at cellId location.
     #Params: canvas - Canvas the X will be drawn on.
@@ -367,8 +371,10 @@ class TicTacToe
       
       if(@currentPlayer == 1)
         @currentPlayer = 2
+        $('#playerStatusLabel').text('Current Player: Player 2');
       else
         @currentPlayer = 1
+        $('#playerStatusLabel').text('Current Player: Player 1');
         
       return @currentPlayer
       
@@ -436,7 +442,7 @@ class TicTacToe
       return exhausted
 
     #Method checks to see if a winner has been reached with the last claimed cell
-    #Returns -1 if no winner is found. Otherwise, the playerId of the winner is returned.
+    #Returns -1 if no winner is found. 0 if a tie. 1 if a winner was found.
     @updateWinner = (cellId, playerId) =>
       console.log "Updaing Winner Status"
       
@@ -445,22 +451,13 @@ class TicTacToe
       
         matchFound = @checkColumn(cellId%3) || @checkDiagonals() || @checkRow(Math.floor cellId/3)
         if(matchFound)
-          winnerFound = playerId
+          winnerFound = 1
           @gameWinner = playerId
           @terminate()
         else if(@allCellsOccupied())
-          alert "Tie reached!"
-          @addMiniGameToScheduler()
-          @suspend()
+          winnerFound = 0
       
-      return @gameWinner
-      
-    #Method looks at the current placement of items and determines if there is a winner.
-    #Returns -1 if no winner is found. Otherwise, the playerId of the winner is returned.
-    @checkForWinner = (cellId, playerId) =>
-      console.log "Checking for Winner"
-       
-      return @gameWinner
+      return winnerFound
 
     #Method sends of notification that a winner of the game has been found.
     #Params: playerId - Unique identifier for players used to report which player won. 
@@ -468,6 +465,14 @@ class TicTacToe
       console.log "Announcing Winner"
       alert "Player " + playerId + " wins!"
       
+    #Method is responsible for breaking ties in the game 
+    @resolveTie = () ->
+      console.log "Resolving Tie"
+      #Resolves a Tie
+      alert "Tie reached!"
+      @addMiniGameToScheduler()
+      @suspend()
+
     #Method chooses the mini-game that will play this game yields. 
     @addMiniGameToScheduler = () ->
       console.log "Adding Mini-Game"
