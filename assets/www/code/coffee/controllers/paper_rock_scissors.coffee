@@ -20,6 +20,16 @@ WinnerStatus =
   UNDETERMINED: 0
   WINNER: 1
   LOSER: 2
+  
+#Class reports the result from playing a given instance of a game
+class GameResult
+  #Constructor. Creates new instances of the class.
+  constructor: (inits)->
+    #Field reports whether the player associated with this result won or lost.
+    @winnerStatus = WinnerStatus.UNDETERMINED
+    
+    #Field references the player ID of the player tied to the game result.
+    @associatedPlayer = 0
 
 #Class runs the Paper Rock Scissors game 
 class PaperRockScissors
@@ -149,7 +159,11 @@ class PaperRockScissors
       if(@currentGameState == GameState.GAME_TERMINATED)
         winnerStatus = WinnerStatus.WINNER
         
-      return winnerStatus
+      gameResult = new GameResult()
+      gameResult.winnerStatus = winnerStatus
+      gameResult.associatedPlayer = @gameWinner
+        
+      return gameResult
       
     #Method chooses the mini-game that will play this game yields. 
     @addMiniGameToScheduler = () ->
@@ -205,7 +219,7 @@ class PaperRockScissors
             alert(winStatement + " " + "Player 2 wins!")
             @gameWinner = 2
           @terminate()
-          
+
     #Method gets a game to resume playing from where it was when it was suspended.
     #Params: previousGameState - returns the game state of the game that finished
     #        before this game was resumed.

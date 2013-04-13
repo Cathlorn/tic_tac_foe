@@ -44,6 +44,39 @@ getElementPositionFromEvent = (element, event) ->
         y: my
     };
 
+
+#Describes the current run status of the game
+GameState =
+  GAME_UNSTARTED: 0
+  GAME_IN_PROGRESS: 1
+  GAME_SUSPENDED: 2
+  GAME_TERMINATED: 3
+
+#Describes the outcome of a given game
+WinnerStatus =
+  UNDETERMINED: 0
+  WINNER: 1
+  LOSER: 2
+      
+#Class keeps track of the dimensions of a given cell in the tic tac toe game
+class CellDimension
+  #Constructor. Creates new instances of the class.
+  constructor: (inits)->
+    @xstart = 0
+    @xend = 0
+    @ystart = 0
+    @yend = 0
+      
+#Class reports the result from playing a given instance of a game
+class GameResult
+  #Constructor. Creates new instances of the class.
+  constructor: (inits)->
+    #Field reports whether the player associated with this result won or lost.
+    @winnerStatus = WinnerStatus.UNDETERMINED
+    
+    #Field references the player ID of the player tied to the game result.
+    @associatedPlayer = 0
+    
 #Class runs the Tic Tac Foe game within a DOM element.
 class tic_tac_foe
   #Constructor. Creates new instances of the class.
@@ -72,28 +105,6 @@ class tic_tac_foe
     @ticTacToe = new TicTacToe(@gameScheduler)
     
     @gameScheduler.addGame(@ticTacToe)
-
-#Describes the current run status of the game
-GameState =
-  GAME_UNSTARTED: 0
-  GAME_IN_PROGRESS: 1
-  GAME_SUSPENDED: 2
-  GAME_TERMINATED: 3
-
-#Describes the outcome of a given game
-WinnerStatus =
-  UNDETERMINED: 0
-  WINNER: 1
-  LOSER: 2
-      
-#Class keeps track of the dimensions of a given cell in the tic tac toe game
-class CellDimension
-  #Constructor. Creates new instances of the class.
-  constructor: (inits)->
-    @xstart = 0
-    @xend = 0
-    @ystart = 0
-    @yend = 0
 
 #Class handles the operations of the main tic tac toe game.
 #It also schedules minigames to be played
@@ -150,7 +161,11 @@ class TicTacToe
       if(@currentGameState == GameState.GAME_TERMINATED)
         winnerStatus = WinnerStatus.WINNER
         
-      return winnerStatus
+      gameResult = new GameResult()
+      gameResult.winnerStatus = winnerStatus
+      gameResult.associatedPlayer = @gameWinner
+        
+      return gameResult
     
     #Method returns the current player that is player
     @getCurrentPlayer = () => 
@@ -491,19 +506,19 @@ class TicTacToe
     #        previous game launched.
     #Remarks: Method can use the outcome of the previously launched game to
     #         influence how the game resumes.
-    @resume = (previousWinnerState, previousPlayerId) =>
+    @resume = (prevGameResult, previousPlayerId) =>
       if(@currentGameState != GameState.GAME_TERMINATED)
         console.log "Resuming game"
         
         #Mini Games must determine a winner if grid is full
         if(@allCellsOccupied())
-          if(previousWinnerState == WinnerStatus.WINNER)
-            winnerFound = previousPlayerId
-            @gameWinner = previousPlayerId
+          if(prevGameResult.winnerStatus == WinnerStatus.WINNER)
+            winnerFound = prevGameResult.associatedPlayer
+            @gameWinner = prevGameResult.associatedPlayer
             @canvasElement.style.display = @prevCanvasVisibility
             @terminate()
-            @announceWinner(previousPlayerId)
-          else if(previousWinnerState == WinnerStatus.LOSER)
+            @announceWinner(prevGameResult.associatedPlayer)
+          else if(prevGameResult.winnerStatus == WinnerStatus.LOSER)
             #Another player needs to be chosen since current one lost.
             @decideTurn()
 
@@ -516,15 +531,13 @@ class TicTacToe
             @suspend()
         else
         #Mini Games determine next moves of players in Tic Tac Toe Game
-          if(previousWinnerState == WinnerStatus.WINNER)
+          if(prevGameResult.winnerStatus == WinnerStatus.WINNER)
             console.log "TODO: Add support for player to claim requested cell when winning mini-game."
-          else if(previousWinnerState == WinnerStatus.LOSER)
+          else if(prevGameResult.winnerStatus == WinnerStatus.LOSER)
             #Another player needs to be chosen since current one lost.
             @decideTurn()
           @canvasElement.style.display = @prevCanvasVisibility
-          @currentGameState = GameState.GAME_IN_PROGRESS
-        
-        
+          @currentGameState = GameState.GAME_IN_PROGRESS        
       else
         console.log "Error: Resuming a terminated game."
 
