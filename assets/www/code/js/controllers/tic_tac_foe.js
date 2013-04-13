@@ -274,7 +274,7 @@
           if (yPos > 0) {
             yStart += _this.GRID_LINE_THICKNESS;
           }
-          xLegLength = heightIncrement - heightOffset;
+          xLegLength = heightIncrement;
           rect = new Rectangle(_this.GRID_LINE_THICKNESS, xLegLength);
           rect.x = xStart;
           rect.y = yStart;
@@ -414,8 +414,7 @@
             winnerFound = playerId;
             _this.gameWinner = playerId;
             _this.terminate();
-          }
-          if (_this.allCellsOccupied()) {
+          } else if (_this.allCellsOccupied()) {
             alert("Tie reached!");
             _this.addMiniGameToScheduler();
             _this.suspend();

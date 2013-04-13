@@ -318,7 +318,7 @@ class TicTacToe extends Game
         if(yPos > 0)
           yStart += @GRID_LINE_THICKNESS
       
-        xLegLength = heightIncrement - heightOffset
+        xLegLength = heightIncrement
         rect = new Rectangle @GRID_LINE_THICKNESS, xLegLength
         rect.x = xStart
         rect.y = yStart
@@ -479,8 +479,7 @@ class TicTacToe extends Game
           winnerFound = playerId
           @gameWinner = playerId
           @terminate()
-        
-        if(@allCellsOccupied())
+        else if(@allCellsOccupied())
           alert "Tie reached!"
           @addMiniGameToScheduler()
           @suspend()
