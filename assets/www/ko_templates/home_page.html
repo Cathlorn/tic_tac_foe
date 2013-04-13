@@ -2,29 +2,6 @@
 Home Page
 </div> -->
 
-<!-- <style type="text/css">
-	img {
-		display: block;
-		margin: 1em auto;
-		border: 1px solid black;
-	}
-
-	#testDivision {
-		z-index: 30;
-		position: absolute;
-		top: 350px;
-		left: 375px;
-	}
-
-	#dojoPic {
-		z-index: 20;
-		vertical-align: center;
-		margin: auto;
-		text-align : center;
-	}
-</style> -->
-
-<!--<div id='contentDivision'> -->
 <style type="text/css">
 	img {
 		display: block;
@@ -81,17 +58,31 @@ Home Page
 		top: 200px;
 		left: 220px;
     }
+    
+    #gameCanvas
+    {
+        z-index:120;
+		height: 114px;
+		width: 114px;
+    }
+
+    #playerStatusLabel
+    {
+        vertical-align: bottom;
+    }
+
 </style>
 
 <img id='dojoPic' src="images/main.bmp" ></img>
 <img id='xImage' src="images/x.bmp" ></img>
 <img id='oImage' src="images/o.bmp" ></img>
 <div id='testDivision'>
-<div id='prsDiv' style='display: none'>
-<button id='RockButton' >Rock</button>
-<button id='PaperButton' >Paper</button>
-<button id='ScissorsButton'>Scissors</button>
-</div>	
+  <!--<canvas id='gameCanvas'></canvas> -->
+  <div id='prsDiv' style='display: none'>
+    <button id='RockButton' >Rock</button>
+    <button id='PaperButton' >Paper</button>
+    <button id='ScissorsButton'>Scissors</button>
+  </div>
 </div>
-<!--</div> -->
+<p id='playerStatusLabel'>Player1</p>
 

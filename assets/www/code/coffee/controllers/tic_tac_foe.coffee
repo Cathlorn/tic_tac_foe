@@ -52,7 +52,8 @@ class tic_tac_foe
     #Initializes the canvas for drawing
     @setupCanvas = (element) =>
       console.log "Setting Up Canvas"
-      @canvasElement = E.canvas tic_tac_foe.CANVAS_HEIGHT,tic_tac_foe.CANVAS_WIDTH
+      #@canvasElement = document.getElementById('gameCanvas')
+      @canvasElement = E.canvas 114, 114
       @canvas = new Canvas @canvasElement
       element.appendChild @canvasElement
     
@@ -60,7 +61,7 @@ class tic_tac_foe
     #Params: element - DOM element Tic Tac Foe will be placed inside.
     @setupGame = (element) =>
       @setupCanvas element
-      @ticTacToe.initialize(element, @canvas, tic_tac_foe.CANVAS_HEIGHT, tic_tac_foe.CANVAS_WIDTH)
+      @ticTacToe.initialize(element, @canvas)
     
     #Figures out which game is next to play (probably round robin)
     #Each game decides when to terminate or yield. A status of the game is reported each time it exits
@@ -71,9 +72,6 @@ class tic_tac_foe
     @ticTacToe = new TicTacToe(@gameScheduler)
     
     @gameScheduler.addGame(@ticTacToe)
-    
-  @CANVAS_HEIGHT=114
-  @CANVAS_WIDTH=114
 
 #Describes the current run status of the game
 GameState =
@@ -87,65 +85,6 @@ WinnerStatus =
   UNDETERMINED: 0
   WINNER: 1
   LOSER: 2
-
-#Class handles functionality common to all games and mini-games
-class Game
-  #Constructor. Creates new instances of the class.
-  #Params: gameScheduler - reference to the game scheduler a game instance is assigned to.
-  constructor: (gameScheduler) ->
-    #Reference to the game scheduler game belongs to
-    #Reference available for games to add other games into 
-    @gameSchedulerReference = gameScheduler
-    
-    #Method reports the current state of the game
-    @getGameState = () ->
-      console.log "Retrieving game state"
-      
-    #Method reports the outcome of the game
-    @getGameResult = () ->
-      console.log "Retrieving game result"
-      
-    #Method reports the current player playing the game
-    @getCurrentPlayer = () =>
-      console.log "Retrieving current player"
-      
-    #Method gets a game to resume playing from where it was when it was suspended.
-    #Params: previousGameState - returns the game state of the game that finished
-    #        before this game was resumed.
-    #        previousPlayerId - returns the Id of the last player to place the
-    #        previous game launched.
-    #Remarks: Method can use the outcome of the previously launched game to
-    #         influence how the game resumes.
-    @resume = (previousWinnerState, previousPlayerId) ->
-      console.log "Resuming game"
-      
-    #Method prepares the game for launch.
-    @initialize = (canvasArg, height, width) =>
-      console.log "Initializing game"
-    
-    #Method suspends game and prepares for another game to launch
-    @suspend = () ->
-      console.log "Suspending game"
-    
-    #Method prepares a game to stop running
-    @terminate = () ->
-      console.log "Terminating game"
-      
-    #Method registers an callback function for when a game suspends
-    @registerSuspendEvents = (callback) =>
-      console.log "Register callback for suspend events"
-    
-    #Method unregisters an callback function for when a game suspends
-    @unregisterSuspendEvents = (callback) =>
-      console.log "Unregister callback for suspend events"
-    
-    #Method registers an callback function for when a game terminates
-    @registerTerminateEvents = (callback) =>
-      console.log "Register callback for terminate events"
-    
-    #Method unregisters an callback function for when a game terminates
-    @unregisterTerminateEvents = (callback) =>
-      console.log "Register callback for terminate events"
       
 #Class keeps track of the dimensions of a given cell in the tic tac toe game
 class CellDimension
@@ -158,7 +97,7 @@ class CellDimension
 
 #Class handles the operations of the main tic tac toe game.
 #It also schedules minigames to be played
-class TicTacToe extends Game
+class TicTacToe
   #Constructor. Creates new instances of the class.
   constructor: (gameScheduler) ->
     
@@ -305,13 +244,13 @@ class TicTacToe extends Game
           @claimedCells.push 0
 
     #Method prepares the game for launch.
-    @initialize = (element, canvasArg, height, width) =>
+    @initialize = (element, canvasArg) =>
       @gameDivision = element
       @canvas = canvasArg
-      @CANVAS_HEIGHT = height
-      @CANVAS_WIDTH = width
+      @CANVAS_HEIGHT = canvasArg.canvas.clientHeight
+      @CANVAS_WIDTH = canvasArg.canvas.clientWidth
       @GRID_LINE_THICKNESS=Math.floor(@CANVAS_HEIGHT/50)
-      temp = Math.floor(width/50)
+      temp = Math.floor(@CANVAS_WIDTH/50)
       if(temp < @GRID_LINE_THICKNESS)
         @GRID_LINE_THICKNESS=temp
       @drawGrid(@canvas)
