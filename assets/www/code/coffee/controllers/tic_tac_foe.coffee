@@ -208,6 +208,7 @@ class TicTacToe
     #http://docs.phonegap.com/en/1.2.0/phonegap_media_media.md.html#media.play
     @playSound = (filename, successCallback, failCallback) ->
       if(Media?)
+        console.log('Playing: ' + filename)
         #Create Media object from filename
         my_media = new Media(filename, successCallback, failCallback);
         #Play audio
@@ -215,11 +216,13 @@ class TicTacToe
       
     #Method triggers when the main music finishes playing
     @mainMusicSuccess = ()=>
-      @playSound(@getPhoneGapPath()+'sounds/main.aac', @mainMusicSuccess, @mainMusicFail)
+      console.log("Successfully played back sound.")
+      @playSound(@getPhoneGapPath()+'sounds/main.wav', @mainMusicSuccess, @mainMusicFail)
 
     #Method triggers when the main music fails to play
     @mainMusicFail = ()=>
-      @playSound(@getPhoneGapPath()+'sounds/main.aac', @mainMusicSuccess, @mainMusicFail)
+      #@playSound(@getPhoneGapPath()+'sounds/main.aac', @mainMusicSuccess, @mainMusicFail)
+      console.log("Unable to playback sound.")
 
     #Method draws the tic tac toe grid onto the canvas.
     #Params: canvas - Canvas the grid will be drawn on.
@@ -281,7 +284,7 @@ class TicTacToe
       @canvasElement.addEventListener('touchstart', @touchEventHandler, false);
       @currentGameState = GameState.GAME_IN_PROGRESS
       @gameWinner = 0
-      @playSound(@getPhoneGapPath()+'sounds/main.aac', @mainMusicSuccess, @mainMusicFail)
+      @playSound(@getPhoneGapPath()+'sounds/main.wav', @mainMusicSuccess, @mainMusicFail)
       @playerStatusLabel = document.getElementById('playerStatusLabel')
       $('#playerStatusLabel').text('Current Player: Player 1');
       

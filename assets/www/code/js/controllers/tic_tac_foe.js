@@ -176,15 +176,17 @@
       this.playSound = function(filename, successCallback, failCallback) {
         var my_media;
         if ((typeof Media !== "undefined" && Media !== null)) {
+          console.log('Playing: ' + filename);
           my_media = new Media(filename, successCallback, failCallback);
           return my_media.play();
         }
       };
       this.mainMusicSuccess = function() {
-        return _this.playSound(_this.getPhoneGapPath() + 'sounds/main.aac', _this.mainMusicSuccess, _this.mainMusicFail);
+        console.log("Successfully played back sound.");
+        return _this.playSound(_this.getPhoneGapPath() + 'sounds/main.wav', _this.mainMusicSuccess, _this.mainMusicFail);
       };
       this.mainMusicFail = function() {
-        return _this.playSound(_this.getPhoneGapPath() + 'sounds/main.aac', _this.mainMusicSuccess, _this.mainMusicFail);
+        return console.log("Unable to playback sound.");
       };
       this.drawGrid = function(canvas) {
         var heightIncrement, i, lookup, rect, scale, widthIncrement, xStart, yStart, _i, _j, _k, _results;
@@ -247,7 +249,7 @@
         _this.canvasElement.addEventListener('touchstart', _this.touchEventHandler, false);
         _this.currentGameState = GameState.GAME_IN_PROGRESS;
         _this.gameWinner = 0;
-        _this.playSound(_this.getPhoneGapPath() + 'sounds/main.aac', _this.mainMusicSuccess, _this.mainMusicFail);
+        _this.playSound(_this.getPhoneGapPath() + 'sounds/main.wav', _this.mainMusicSuccess, _this.mainMusicFail);
         _this.playerStatusLabel = document.getElementById('playerStatusLabel');
         return $('#playerStatusLabel').text('Current Player: Player 1');
       };
