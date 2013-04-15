@@ -156,7 +156,8 @@
       this.updatePlayerChoice = function(playerId, choice) {
         if (playerId === 1) {
           _this.player1Choice = choice;
-          return _this.decideTurn();
+          _this.decideTurn();
+          return alert("Choice Made. Hand to next player.");
         } else {
           _this.player2Choice = choice;
           return _this.determineWinner(_this.player1Choice, _this.player2Choice);

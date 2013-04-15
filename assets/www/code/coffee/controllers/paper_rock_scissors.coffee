@@ -195,6 +195,7 @@ class PaperRockScissors
       if(playerId == 1)
         @player1Choice = choice
         @decideTurn()
+        alert("Choice Made. Hand to next player.")
       else
         @player2Choice = choice
         @determineWinner(@player1Choice, @player2Choice)

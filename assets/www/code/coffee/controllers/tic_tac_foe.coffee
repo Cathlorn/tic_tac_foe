@@ -6,11 +6,9 @@
 if typeof module != "undefined" && module.exports
   #On a server
   PaperRockScissors = require("paper_rock_scissors.coffee").PaperRockScissors
-  Media = require("index.html").Media
 else
   #On a client
   PaperRockScissors = window.PaperRockScissors
-  Media = window.Media
   
 #Adding array method to remove elements cleanly from an array
 #Courtesy of Stack Overflow
@@ -198,12 +196,18 @@ class TicTacToe
               @resolveTie()
             else if(winner < 0)
               @decideTurn()
-              
+           
+    #Method determines base file path   
+    @getPhoneGapPath = ()->
+      path = window.location.pathname
+      path = path.substr( path, path.length - 10 )
+      return 'file://' + path
+
     #Method playsback an audio file using phonegap.
     #Source modified from:
     #http://docs.phonegap.com/en/1.2.0/phonegap_media_media.md.html#media.play
     @playSound = (filename, successCallback, failCallback) ->
-      if(Media != null && Media != undefined)
+      if(Media?)
         #Create Media object from filename
         my_media = new Media(filename, successCallback, failCallback);
         #Play audio
@@ -211,11 +215,11 @@ class TicTacToe
       
     #Method triggers when the main music finishes playing
     @mainMusicSuccess = ()=>
-      @playSound('sounds/main.aac', @mainMusicSuccess, @mainMusicFail)
+      @playSound(@getPhoneGapPath()+'sounds/main.aac', @mainMusicSuccess, @mainMusicFail)
 
     #Method triggers when the main music fails to play
     @mainMusicFail = ()=>
-      @playSound('sounds/main.aac', @mainMusicSuccess, @mainMusicFail)
+      @playSound(@getPhoneGapPath()+'sounds/main.aac', @mainMusicSuccess, @mainMusicFail)
 
     #Method draws the tic tac toe grid onto the canvas.
     #Params: canvas - Canvas the grid will be drawn on.
@@ -277,7 +281,7 @@ class TicTacToe
       @canvasElement.addEventListener('touchstart', @touchEventHandler, false);
       @currentGameState = GameState.GAME_IN_PROGRESS
       @gameWinner = 0
-      @playSound('sounds/main.aac', @mainMusicSuccess, @mainMusicFail)
+      @playSound(@getPhoneGapPath()+'sounds/main.aac', @mainMusicSuccess, @mainMusicFail)
       @playerStatusLabel = document.getElementById('playerStatusLabel')
       $('#playerStatusLabel').text('Current Player: Player 1');
       
